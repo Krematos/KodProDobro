@@ -1,0 +1,35 @@
+# Compiled Java classes
+target/
+*.class
+
+# Log files
+*.log
+maven-wrapper.log*
+
+# Package files
+*.jar
+*.war
+
+# Environment variables
+.env
+.env*
+!/.env.example
+!/.env.template
+
+# IDE files
+.idea/
+*.iml
+.idea/modules.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/libraries/
+*.iws
+*.ipr
+
+# Sensitive configuration
+src/main/resources/application.properties
+
+application.properties
+data.sql
+
+DataInitializer.java
