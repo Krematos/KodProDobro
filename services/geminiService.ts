@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import type { Project } from "../types";
 
@@ -29,7 +28,7 @@ const responseSchema = {
         },
         reasoning: {
           type: Type.STRING,
-          description: "A detailed explanation of why this project is an excellent match for the user, highlighting skill alignment and potential for growth.",
+          description: "A detailed explanation of why this project is an excellent match for the user, highlighting skill alignment and potential for growth. Must be in Czech.",
         },
         matchScore: {
             type: Type.NUMBER,
@@ -50,8 +49,8 @@ export const findMatchingProjects = async (
     console.log("Using mock Gemini response.");
     await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
     return [
-        { projectId: 'p1', reasoning: "This project is a perfect match because you mentioned experience with mobile development and Firebase, which are the core technologies required. It also aligns with your interest in social impact apps.", matchScore: 95 },
-        { projectId: 'p2', reasoning: "Your skills in React and UI/UX design are highly relevant for this website revamp. This project would be a great way to apply your design skills to a high-impact platform.", matchScore: 85 }
+        { projectId: 'p1', reasoning: "Tento projekt je perfektní shodou, protože jste zmínila zkušenosti s mobilním vývojem a Firebase, což jsou klíčové technologie. Také to odpovídá vašemu zájmu o aplikace se sociálním dopadem.", matchScore: 95 },
+        { projectId: 'p2', reasoning: "Vaše dovednosti v Reactu a UI/UX designu jsou vysoce relevantní pro tento redesign webu. Tento projekt by byl skvělým způsobem, jak uplatnit vaše designérské schopnosti na platformě s velkým dopadem.", matchScore: 85 }
     ];
   }
 
@@ -63,21 +62,21 @@ export const findMatchingProjects = async (
   }));
 
   const prompt = `
-    You are an expert career advisor for university students in tech and design. Your task is to connect a student with the most suitable volunteer projects at Czech non-profits.
+    Jsi expertní kariérní poradce pro univerzitní studenty v oboru technologií a designu. Tvým úkolem je propojit studenta s nejvhodnějšími dobrovolnickými projekty v českých neziskových organizacích.
 
-    Here is the student's profile and interests:
+    Zde je profil a zájmy studenta:
     ---
     ${userDescription}
     ---
 
-    Here is a list of available projects in JSON format:
+    Zde je seznam dostupných projektů ve formátu JSON:
     ---
     ${JSON.stringify(projectSummaries, null, 2)}
     ---
 
-    Based on the student's profile, identify the TOP 2-3 projects that are the best fit. For each recommendation, provide a compelling reason why it's a good match, linking their skills and interests directly to the project's requirements and goals. Provide a match score from 0 to 100.
+    Na základě profilu studenta identifikuj TOP 2-3 projekty, které se nejlépe hodí. Pro každé doporučení poskytni přesvědčivý důvod (v češtině), proč je to dobrá shoda, a propoj jejich dovednosti a zájmy přímo s požadavky a cíli projektu. Uveď skóre shody od 0 do 100.
 
-    Return your response as a JSON array that strictly adheres to the provided schema. Do not include any other text or markdown formatting.
+    Odpověď vrať jako pole JSON, které striktně dodržuje poskytnuté schéma. Nevkládej žádný jiný text ani markdown formátování. Odpovídej pouze v českém jazyce.
   `;
 
   try {

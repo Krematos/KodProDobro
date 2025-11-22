@@ -27,6 +27,15 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onSelect, onApply, i
 
   const isSaved = isProjectSaved ? isProjectSaved(project.id) : false;
 
+  // Map internal status to Czech display status
+  const statusMap = {
+      'Open': 'Otevřeno',
+      'In Progress': 'V řešení',
+      'Completed': 'Dokončeno'
+  };
+  const displayStatus = statusMap[project.status];
+
+
   return (
     <div 
       className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden cursor-pointer mb-6 relative"
@@ -39,9 +48,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onSelect, onApply, i
             <div className="flex items-center gap-2">
                 <p className="text-sm font-semibold text-brand-blue">{project.organization.name}</p>
                 {project.organization.isCommunityChampion && (
-                    <span title="Community Champion" className="flex items-center gap-1 bg-yellow-100 text-yellow-800 text-xs font-semibold px-2 py-0.5 rounded-full">
+                    <span title="Komunitní šampion" className="flex items-center gap-1 bg-yellow-100 text-yellow-800 text-xs font-semibold px-2 py-0.5 rounded-full">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" clipRule="evenodd" /></svg>
-                        Champion
+                        Šampion
                     </span>
                 )}
             </div>
@@ -71,7 +80,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onSelect, onApply, i
                     className={`p-2 rounded-full transition-colors ${
                         isSaved ? 'text-accent-yellow bg-yellow-100' : 'text-gray-400 hover:bg-gray-200'
                     }`}
-                    title={isSaved ? "Unsave Project" : "Save Project"}
+                    title={isSaved ? "Zrušit uložení" : "Uložit projekt"}
                 >
                     {isSaved ? BookmarkFilledIcon : BookmarkOutlineIcon}
                 </button>
@@ -84,11 +93,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onSelect, onApply, i
                     }}
                     className="px-4 py-2 text-sm font-bold text-white bg-accent-teal rounded-lg shadow hover:bg-opacity-80 transition-all"
                 >
-                    Apply Now
+                    Mám zájem
                 </button>
             ) : (
                 <span className="px-3 py-1.5 text-sm font-semibold text-gray-700 bg-gray-200 rounded-full">
-                    {project.status}
+                    {displayStatus}
                 </span>
             )}
         </div>

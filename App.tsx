@@ -101,7 +101,7 @@ const App: React.FC = () => {
   const handleLogin = useCallback(() => {
     setIsAuthenticated(true);
     setIsLoginModalOpen(false);
-    showToast("Successfully logged in!");
+    showToast("Úspěšně přihlášeno!");
   }, [showToast]);
 
   const handleLogout = useCallback(() => {
@@ -207,10 +207,10 @@ const App: React.FC = () => {
   };
   
   const navItems = [
-    { page: 'home' as Page, label: 'Home', icon: HomeIcon },
-    { page: 'ai-match' as Page, label: 'AI Match', icon: AiSparklesIcon },
-    { page: 'chat' as Page, label: 'Messages', icon: ChatIcon },
-    { page: 'profile' as Page, label: 'Profile', icon: ProfileIcon },
+    { page: 'home' as Page, label: 'Domů', icon: HomeIcon },
+    { page: 'ai-match' as Page, label: 'AI Shoda', icon: AiSparklesIcon },
+    { page: 'chat' as Page, label: 'Zprávy', icon: ChatIcon },
+    { page: 'profile' as Page, label: 'Profil', icon: ProfileIcon },
   ];
 
 
@@ -228,10 +228,10 @@ const App: React.FC = () => {
            {!isAuthenticated && (
               <div className="flex items-center gap-2">
                   <button onClick={requestLogin} className="text-sm font-semibold text-brand-blue hover:text-opacity-80">
-                      Sign In
+                      Přihlásit
                   </button>
                    <button onClick={requestLogin} className="text-sm font-semibold text-white bg-brand-blue px-3 py-1.5 rounded-lg hover:bg-opacity-80 transition-colors">
-                      Sign Up
+                      Registrovat
                   </button>
               </div>
           )}

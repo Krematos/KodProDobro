@@ -26,18 +26,18 @@ const NotificationSettingsModal: React.FC<NotificationSettingsModalProps> = ({ i
     <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-center items-center" onClick={onClose}>
       <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4" onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-brand-dark">Notification Settings</h2>
+          <h2 className="text-2xl font-bold text-brand-dark">Nastavení notifikací</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600">&times;</button>
         </div>
-        <p className="text-gray-600 mb-6">Choose how you want to be notified. This will simulate sending you an email.</p>
+        <p className="text-gray-600 mb-6">Vyberte, jak chcete být informováni. Toto simuluje odesílání e-mailu.</p>
         <div className="space-y-4">
             <ToggleSwitch 
-                label="New Message Notifications"
+                label="Upozornění na nové zprávy"
                 enabled={preferences.newMessages}
                 onChange={(enabled) => onPreferencesChange({ newMessages: enabled })}
             />
             <ToggleSwitch 
-                label="Project Status Updates"
+                label="Aktualizace stavu projektu"
                 enabled={preferences.projectUpdates}
                 onChange={(enabled) => onPreferencesChange({ projectUpdates: enabled })}
             />
@@ -46,7 +46,7 @@ const NotificationSettingsModal: React.FC<NotificationSettingsModalProps> = ({ i
             onClick={onClose}
             className="w-full mt-8 bg-brand-blue text-white font-bold py-3 px-4 rounded-lg hover:bg-opacity-90 transition-colors"
         >
-            Done
+            Hotovo
         </button>
       </div>
     </div>

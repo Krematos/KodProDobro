@@ -39,9 +39,9 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onLogout, notificationPrefere
   const xpForNextLevel = CURRENT_USER.level * 500;
 
   const tabs = [
-    { id: 'about', label: 'About', icon: <div className="w-6 h-6">{ProfileIcon}</div> },
+    { id: 'about', label: 'O mně', icon: <div className="w-6 h-6">{ProfileIcon}</div> },
     { id: 'portfolio', label: 'Portfolio', icon: <div className="w-5 h-5">{BriefcaseIcon}</div> },
-    { id: 'achievements', label: 'Achievements', icon: <div className="w-5 h-5">{TrophyIcon}</div> }
+    { id: 'achievements', label: 'Úspěchy', icon: <div className="w-5 h-5">{TrophyIcon}</div> }
   ];
   
   const renderContent = () => {
@@ -50,11 +50,11 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onLogout, notificationPrefere
         return (
           <div className="bg-white rounded-xl shadow-lg p-6 animate-fade-in">
             <div className="mb-6">
-              <h3 className="text-xl font-semibold text-brand-dark mb-2">About Me</h3>
+              <h3 className="text-xl font-semibold text-brand-dark mb-2">O mně</h3>
               <p className="text-gray-700 leading-relaxed">{CURRENT_USER.bio}</p>
             </div>
             <div>
-              <h3 className="text-xl font-semibold text-brand-dark mb-3">My Skills</h3>
+              <h3 className="text-xl font-semibold text-brand-dark mb-3">Moje dovednosti</h3>
               <div className="flex flex-wrap gap-2">
                 {CURRENT_USER.skills.map(skill => (
                   <span key={skill} className="bg-teal-100 text-accent-teal text-sm font-medium px-3 py-1.5 rounded-full">{skill}</span>
@@ -76,14 +76,14 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onLogout, notificationPrefere
                 />
               ))
             ) : (
-              <p className="text-gray-600 text-center py-8">No completed projects yet. Finish a project to add it to your portfolio!</p>
+              <p className="text-gray-600 text-center py-8">Žádné dokončené projekty. Dokončete projekt, abyste jej přidali do svého portfolia!</p>
             )}
           </div>
         );
       case 'achievements':
         return (
           <div className="bg-white rounded-xl shadow-lg p-6 animate-fade-in">
-            <h3 className="text-xl font-semibold text-brand-dark mb-4">My Achievements</h3>
+            <h3 className="text-xl font-semibold text-brand-dark mb-4">Moje úspěchy</h3>
             <div className="space-y-4">
                 {GAMIFICATION_BADGES.map(badge => {
                     const progress = badge.progress(CURRENT_USER);
@@ -97,7 +97,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onLogout, notificationPrefere
                                 {!isEarned && (
                                     <div className="mt-2">
                                         <div className="flex justify-between text-xs font-semibold text-gray-500 mb-1">
-                                            <span>Progress</span>
+                                            <span>Postup</span>
                                             <span>{progress.current} / {progress.target}</span>
                                         </div>
                                         <ProgressBar value={progress.current} max={progress.target} />
@@ -131,21 +131,21 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onLogout, notificationPrefere
             </button>
             {settingsOpen && (
               <div 
-                className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl py-1"
+                className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl py-1"
                 onMouseLeave={() => setSettingsOpen(false)}
               >
                 <a href="#" className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     <div className="w-5 h-5">{ProfileIcon}</div>
-                    <span>Edit Profile</span>
+                    <span>Upravit profil</span>
                 </a>
                 <button onClick={() => { setIsNotificationModalOpen(true); setSettingsOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     <div className="w-5 h-5">{EnvelopeIcon}</div>
-                    <span>Notification Settings</span>
+                    <span>Nastavení notifikací</span>
                 </button>
                 <div className="my-1 border-t border-gray-100"></div>
                 <button onClick={onLogout} className="flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-                    <span>Logout</span>
+                    <span>Odhlásit</span>
                 </button>
               </div>
             )}
@@ -169,7 +169,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onLogout, notificationPrefere
         <div className="border-t pt-4">
              <div className="mb-3">
                 <div className="flex justify-between text-sm font-semibold text-gray-600 mb-1">
-                    <span>Level Progress</span>
+                    <span>Postup úrovní</span>
                     <span>{CURRENT_USER.xp} / {xpForNextLevel} XP</span>
                 </div>
                 <ProgressBar value={CURRENT_USER.xp} max={xpForNextLevel} />
@@ -177,11 +177,11 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onLogout, notificationPrefere
              <div className="flex justify-around text-center mt-4">
                 <div>
                     <p className="text-2xl font-bold text-brand-blue">{CURRENT_USER.totalImpact}</p>
-                    <p className="text-sm text-gray-500 font-semibold">Total Impact</p>
+                    <p className="text-sm text-gray-500 font-semibold">Celkový dopad</p>
                 </div>
                 <div>
                     <p className="text-2xl font-bold text-brand-blue">{CURRENT_USER.contributionStreak}x</p>
-                    <p className="text-sm text-gray-500 font-semibold">Streak</p>
+                    <p className="text-sm text-gray-500 font-semibold">Řada (Streak)</p>
                 </div>
              </div>
         </div>

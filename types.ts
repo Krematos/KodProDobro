@@ -24,7 +24,7 @@ export interface Project {
   status: 'Open' | 'In Progress' | 'Completed';
   tags: string[];
   impactScore: number;
-  highlight?: 'First Mover' | 'Featured';
+  highlight?: 'Průkopník' | 'Doporučeno';
 }
 
 export interface User {

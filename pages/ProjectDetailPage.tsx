@@ -16,6 +16,11 @@ interface ProjectDetailPageProps {
 }
 
 const ProjectStatusBadge: React.FC<{ status: 'Open' | 'In Progress' | 'Completed' }> = ({ status }) => {
+    const statusMap = {
+        'Open': 'Otevřeno',
+        'In Progress': 'V řešení',
+        'Completed': 'Dokončeno'
+    };
     const statusStyles = {
         'Open': { dot: 'bg-green-500', text: 'text-green-800', bg: 'bg-green-100' },
         'In Progress': { dot: 'bg-yellow-500', text: 'text-yellow-800', bg: 'bg-yellow-100' },
@@ -25,7 +30,7 @@ const ProjectStatusBadge: React.FC<{ status: 'Open' | 'In Progress' | 'Completed
     return (
         <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold ${style.bg} ${style.text}`}>
             <span className={`w-2 h-2 mr-2 rounded-full ${style.dot}`}></span>
-            {status}
+            {statusMap[status]}
         </div>
     );
 };
@@ -46,8 +51,8 @@ const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ projectId, onBack
   if (!project) {
     return (
       <div>
-        <Header title="Project Not Found" onBack={onBack} />
-        <p>The requested project could not be found.</p>
+        <Header title="Projekt nenalezen" onBack={onBack} />
+        <p>Požadovaný projekt nebyl nalezen.</p>
       </div>
     );
   }
@@ -62,17 +67,24 @@ const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ projectId, onBack
 
   const handleCheckUpdates = () => {
     if (notificationPreferences.projectUpdates) {
-        showToast(`Email notification: No new updates for "${project.title}".`);
+        showToast(`Email notifikace: Žádné nové aktualizace pro "${project.title}".`);
     } else {
-        alert(`Your project status is currently: ${project.status}. Enable email notifications in your profile for automatic updates.`);
+        alert(`Stav vašeho projektu je momentálně: ${project.status}. Povolte emailová upozornění ve svém profilu pro automatické aktualizace.`);
     }
   };
   
   const handleApply = () => {
-      alert(`Thank you for your interest in "${project?.title}"! Your application has been submitted for review.`);
+      alert(`Děkujeme za váš zájem o projekt "${project?.title}"! Vaše přihláška byla odeslána ke kontrole.`);
   }
 
   const isSaved = isProjectSaved(project.id);
+
+  // Helper for status text in button
+  const statusMap = {
+      'Open': 'Otevřeno',
+      'In Progress': 'V řešení',
+      'Completed': 'Dokončeno'
+  };
 
   return (
     <div className="animate-fade-in">
@@ -99,45 +111,45 @@ const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ projectId, onBack
             ))}
           </div>
           
-          <h3 className="text-xl font-semibold text-brand-dark mt-6 mb-2">Project Description</h3>
+          <h3 className="text-xl font-semibold text-brand-dark mt-6 mb-2">Popis projektu</h3>
           <p className="text-gray-700 leading-relaxed">{project.description}</p>
           
           <div className="mt-6 border-t pt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                 <div>
-                  <h3 className="text-xl font-semibold text-brand-dark mb-3">Required Skills</h3>
+                  <h3 className="text-xl font-semibold text-brand-dark mb-3">Požadované dovednosti</h3>
                   <ul className="list-disc list-inside text-gray-700 space-y-1">
                     {project.requiredSkills.map(skill => <li key={skill}>{skill}</li>)}
                   </ul>
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-brand-dark mb-3">Key Deliverables</h3>
+                  <h3 className="text-xl font-semibold text-brand-dark mb-3">Klíčové výstupy</h3>
                   <ul className="list-disc list-inside text-gray-700 space-y-1">
                      {project.deliverables.map(item => <li key={item}>{item}</li>)}
                   </ul>
                 </div>
                 <div className="md:col-span-2">
-                    <h3 className="text-xl font-semibold text-brand-dark mb-3">Project Details</h3>
+                    <h3 className="text-xl font-semibold text-brand-dark mb-3">Detaily projektu</h3>
                     <div className="flex flex-col sm:flex-row sm:flex-wrap gap-6 text-gray-700">
                         <div className="flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                             <div>
-                                <p className="font-semibold">Timeline</p>
+                                <p className="font-semibold">Časový plán</p>
                                 <p>{project.timeline}</p>
                             </div>
                         </div>
                         <div className="flex items-center">
                              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                             <div>
-                                <p className="font-semibold">Commitment</p>
+                                <p className="font-semibold">Závazek</p>
                                 <p>{project.commitment}</p>
                             </div>
                         </div>
                         <div className="flex items-center">
                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
                             <div>
-                                <p className="font-semibold">Impact Score</p>
-                                <p className="font-bold text-accent-teal">{project.impactScore} points</p>
+                                <p className="font-semibold">Skóre dopadu</p>
+                                <p className="font-bold text-accent-teal">{project.impactScore} bodů</p>
                             </div>
                         </div>
                     </div>
@@ -153,24 +165,24 @@ const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ projectId, onBack
                 disabled={project.status !== 'Open'}
                 className="col-span-2 lg:col-span-1 bg-brand-blue text-white font-bold py-3 px-4 rounded-lg hover:bg-opacity-90 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
              >
-              {project.status === 'Open' ? 'Apply Now' : `Status: ${project.status}`}
+              {project.status === 'Open' ? 'Mám zájem' : `Stav: ${statusMap[project.status]}`}
             </button>
              <button 
                 onClick={() => handleAction(() => toggleSaveProject(project.id))}
                 className={`font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 border ${isSaved ? 'bg-accent-yellow border-accent-yellow text-white' : 'border-gray-300 bg-white text-brand-dark hover:bg-gray-100'}`}
              >
               {isSaved ? BookmarkFilledIcon : BookmarkOutlineIcon}
-              {isSaved ? 'Saved' : 'Save'}
+              {isSaved ? 'Uloženo' : 'Uložit'}
             </button>
             <button 
                 onClick={() => handleAction(handleCheckUpdates)}
                 className="bg-gray-200 text-brand-dark font-bold py-3 px-4 rounded-lg hover:bg-gray-300 transition-colors">
-              Check for Updates
+              Zkontrolovat aktualizace
             </button>
             <button 
               onClick={() => handleAction(onChat)}
               className="bg-gray-200 text-brand-dark font-bold py-3 px-4 rounded-lg hover:bg-gray-300 transition-colors">
-              Ask a Question
+              Položit dotaz
             </button>
           </div>
         </div>

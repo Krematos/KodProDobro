@@ -45,7 +45,7 @@ const ChatListPage: React.FC<ChatListPageProps> = ({ onChatSelect }) => {
 
   return (
     <div>
-      <Header title="My Messages" />
+      <Header title="Moje zprávy" />
       
       {conversations.length > 0 ? (
         conversations.map(convo => (
@@ -57,8 +57,8 @@ const ChatListPage: React.FC<ChatListPageProps> = ({ onChatSelect }) => {
         ))
       ) : (
         <div className="text-center p-8 bg-white rounded-lg shadow-md">
-            <h3 className="text-xl font-semibold text-brand-dark">No conversations yet.</h3>
-            <p className="text-gray-500 mt-2">Start a conversation by applying for a project or asking a question.</p>
+            <h3 className="text-xl font-semibold text-brand-dark">Zatím žádné konverzace.</h3>
+            <p className="text-gray-500 mt-2">Začněte konverzaci přihlášením k projektu nebo položením otázky.</p>
         </div>
       )}
     </div>

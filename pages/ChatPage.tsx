@@ -16,7 +16,7 @@ const ChatMessageBubble: React.FC<{ message: ChatMessage }> = ({ message }) => {
     const isUser = message.sender === 'user';
     return (
         <div className={`flex items-end gap-2 my-2 animate-fade-in ${isUser ? 'justify-end' : 'justify-start'}`}>
-            {!isUser && <img src={message.avatar} alt="Sender" className="w-8 h-8 rounded-full"/>}
+            {!isUser && <img src={message.avatar} alt="Odesílatel" className="w-8 h-8 rounded-full"/>}
             <div className={`max-w-xs md:max-w-md px-4 py-2 rounded-2xl shadow-sm ${isUser ? 'bg-brand-blue text-white rounded-br-none' : 'bg-gray-200 text-brand-dark rounded-bl-none'}`}>
                 <p className="text-sm">{message.text}</p>
             </div>
@@ -43,7 +43,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ chatId, onBack, notificationPrefere
             setMessages(prev => [...prev, message]);
             // Simulate notification for non-user messages
             if (message.sender === 'other' && notificationPreferences.newMessages) {
-                showToast(`Email notification: New message from ${chat?.organization.name}`);
+                showToast(`Email notifikace: Nová zpráva od ${chat?.organization.name}`);
             }
         }
     };
@@ -80,15 +80,15 @@ const ChatPage: React.FC<ChatPageProps> = ({ chatId, onBack, notificationPrefere
   if (!conversation) {
       return (
           <div>
-              <Header title="Loading Chat..." onBack={onBack}/>
-              <div className="text-center p-8">Loading conversation details...</div>
+              <Header title="Načítání chatu..." onBack={onBack}/>
+              <div className="text-center p-8">Načítání detailů konverzace...</div>
           </div>
       );
   }
 
   return (
     <div className="h-full flex flex-col" style={{maxHeight: 'calc(100vh - 150px)'}}>
-      <Header title={`Chat with ${conversation.organization.name}`} onBack={onBack}/>
+      <Header title={`Chat s ${conversation.organization.name}`} onBack={onBack}/>
       
       <div className="flex-grow overflow-y-auto bg-white rounded-lg p-4 shadow-inner mb-4">
         {messages.map(msg => (
@@ -101,7 +101,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ chatId, onBack, notificationPrefere
         <div className="flex items-center">
           <input
             type="text"
-            placeholder="Type your message..."
+            placeholder="Napište zprávu..."
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             className="flex-grow p-3 border-none focus:ring-0 rounded-lg bg-gray-100"

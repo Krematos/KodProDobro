@@ -7,8 +7,8 @@ type MessageListener = (chatId: string, message: ChatMessage) => void;
 class ChatService {
   private listeners: MessageListener[] = [];
   private mockResponses: Record<string, string[]> = {
-      'chat1': ["That's great, let's set up a call for tomorrow at 2 PM. I'll send an invite."],
-      'chat2': ["We use Stripe for payment processing. The main task is to build a new React component that interacts with the Stripe API for checkout and subscription management."],
+      'chat1': ["To je skvělé, pojďme si zavolat zítra ve 14:00. Pošlu vám pozvánku."],
+      'chat2': ["Pro zpracování plateb používáme Stripe. Hlavním úkolem je vytvořit novou komponentu v Reactu, která bude komunikovat se Stripe API pro checkout a správu předplatného."],
   };
 
   subscribe(listener: MessageListener) {
@@ -30,7 +30,7 @@ class ChatService {
       const conversation = getChatConversation(chatId);
       if (!conversation) return;
       
-      const responseText = this.mockResponses[chatId]?.[0] || "Thanks for your message! We'll get back to you shortly.";
+      const responseText = this.mockResponses[chatId]?.[0] || "Děkujeme za vaši zprávu! Ozveme se vám co nejdříve.";
       
       const responseMessage: ChatMessage = {
           id: Date.now(),

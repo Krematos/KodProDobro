@@ -45,7 +45,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
         onLoginSuccess();
         handleClose();
     } else {
-        setError('Invalid email or password.');
+        setError('Neplatný e-mail nebo heslo.');
     }
     setIsLoading(false);
   };
@@ -54,7 +54,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
     e.preventDefault();
     setError(null);
      if (registerPassword.length < 8) {
-        setError("Password must be at least 8 characters long.");
+        setError("Heslo musí mít alespoň 8 znaků.");
         return;
     }
     setIsLoading(true);
@@ -79,38 +79,38 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
                 onClick={() => { setMode('login'); setError(null); }}
                 className={`w-1/2 py-3 text-sm font-bold ${mode === 'login' ? 'text-brand-blue border-b-2 border-brand-blue' : 'text-gray-500'}`}
               >
-                Sign In
+                Přihlásit
               </button>
               <button 
                 onClick={() => { setMode('register'); setError(null); }}
                 className={`w-1/2 py-3 text-sm font-bold ${mode === 'register' ? 'text-brand-blue border-b-2 border-brand-blue' : 'text-gray-500'}`}
               >
-                Create Account
+                Vytvořit účet
               </button>
             </div>
             
             {mode === 'login' ? (
                 <form onSubmit={handleLoginSubmit}>
-                    <p className="text-center text-gray-600 text-sm mb-4">Sign in to apply for projects, save opportunities, and message organizations.</p>
+                    <p className="text-center text-gray-600 text-sm mb-4">Přihlaste se pro přihlášení k projektům, ukládání příležitostí a posílání zpráv organizacím.</p>
                     {error && <div className="bg-red-100 text-red-700 p-3 rounded-lg text-sm mb-4">{error}</div>}
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="login-email">Email</label>
                         <input type="email" id="login-email" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} required className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-1 focus:ring-brand-blue" />
                     </div>
                     <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="login-password">Password</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="login-password">Heslo</label>
                         <input type="password" id="login-password" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} required className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-1 focus:ring-brand-blue" />
                     </div>
                     <button type="submit" disabled={isLoading} className="w-full mt-2 bg-brand-blue text-white font-bold py-3 rounded-lg hover:bg-opacity-90 disabled:bg-gray-400">
-                        {isLoading ? 'Signing In...' : 'Sign In'}
+                        {isLoading ? 'Přihlašování...' : 'Přihlásit se'}
                     </button>
                 </form>
             ) : (
                  <form onSubmit={handleRegisterSubmit}>
-                    <p className="text-center text-gray-600 text-sm mb-4">Create an account to start making an impact today.</p>
+                    <p className="text-center text-gray-600 text-sm mb-4">Vytvořte si účet a začněte pomáhat ještě dnes.</p>
                     {error && <div className="bg-red-100 text-red-700 p-3 rounded-lg text-sm mb-4">{error}</div>}
                     <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="register-name">Full Name</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="register-name">Celé jméno</label>
                         <input type="text" id="register-name" value={registerName} onChange={e => setRegisterName(e.target.value)} required className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-1 focus:ring-brand-blue" />
                     </div>
                     <div className="mb-4">
@@ -118,11 +118,11 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
                         <input type="email" id="register-email" value={registerEmail} onChange={e => setRegisterEmail(e.target.value)} required className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-1 focus:ring-brand-blue" />
                     </div>
                     <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="register-password">Password</label>
-                        <input type="password" id="register-password" value={registerPassword} onChange={e => setRegisterPassword(e.target.value)} required className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-1 focus:ring-brand-blue" placeholder="Min. 8 characters"/>
+                        <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="register-password">Heslo</label>
+                        <input type="password" id="register-password" value={registerPassword} onChange={e => setRegisterPassword(e.target.value)} required className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-1 focus:ring-brand-blue" placeholder="Min. 8 znaků"/>
                     </div>
                     <button type="submit" disabled={isLoading} className="w-full mt-2 bg-brand-blue text-white font-bold py-3 rounded-lg hover:bg-opacity-90 disabled:bg-gray-400">
-                        {isLoading ? 'Creating Account...' : 'Create Account'}
+                        {isLoading ? 'Vytváření účtu...' : 'Vytvořit účet'}
                     </button>
                 </form>
             )}
