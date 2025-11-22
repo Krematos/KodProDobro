@@ -1,11 +1,18 @@
 import React from 'react';
 import Header from '../components/Header';
-import { PROJECTS } from '../constants';
+import { PROJECTS, BookmarkFilledIcon, BookmarkOutlineIcon } from '../constants';
+import type { NotificationPreferences } from '../App';
 
 interface ProjectDetailPageProps {
   projectId: string;
   onBack: () => void;
   onChat: () => void;
+  isProjectSaved: (projectId: string) => boolean;
+  toggleSaveProject: (projectId: string) => void;
+  notificationPreferences: NotificationPreferences;
+  showToast: (message: string) => void;
+  isAuthenticated: boolean;
+  requestLogin: () => void;
 }
 
 const ProjectStatusBadge: React.FC<{ status: 'Open' | 'In Progress' | 'Completed' }> = ({ status }) => {
@@ -33,7 +40,7 @@ const HighlightBadge: React.FC<{ text: string }> = ({ text }) => {
 };
 
 
-const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ projectId, onBack, onChat }) => {
+const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ projectId, onBack, onChat, isProjectSaved, toggleSaveProject, notificationPreferences, showToast, isAuthenticated, requestLogin }) => {
   const project = PROJECTS.find(p => p.id === projectId);
 
   if (!project) {
@@ -44,6 +51,28 @@ const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ projectId, onBack
       </div>
     );
   }
+
+  const handleAction = (action: () => void) => {
+      if (!isAuthenticated) {
+          requestLogin();
+          return;
+      }
+      action();
+  }
+
+  const handleCheckUpdates = () => {
+    if (notificationPreferences.projectUpdates) {
+        showToast(`Email notification: No new updates for "${project.title}".`);
+    } else {
+        alert(`Your project status is currently: ${project.status}. Enable email notifications in your profile for automatic updates.`);
+    }
+  };
+  
+  const handleApply = () => {
+      alert(`Thank you for your interest in "${project?.title}"! Your application has been submitted for review.`);
+  }
+
+  const isSaved = isProjectSaved(project.id);
 
   return (
     <div className="animate-fade-in">
@@ -118,16 +147,29 @@ const ProjectDetailPage: React.FC<ProjectDetailPageProps> = ({ projectId, onBack
         </div>
         
         <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
              <button 
+                onClick={() => handleAction(handleApply)}
                 disabled={project.status !== 'Open'}
-                className="w-full bg-brand-blue text-white font-bold py-3 px-4 rounded-lg hover:bg-opacity-90 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="col-span-2 lg:col-span-1 bg-brand-blue text-white font-bold py-3 px-4 rounded-lg hover:bg-opacity-90 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
              >
               {project.status === 'Open' ? 'Apply Now' : `Status: ${project.status}`}
             </button>
+             <button 
+                onClick={() => handleAction(() => toggleSaveProject(project.id))}
+                className={`font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 border ${isSaved ? 'bg-accent-yellow border-accent-yellow text-white' : 'border-gray-300 bg-white text-brand-dark hover:bg-gray-100'}`}
+             >
+              {isSaved ? BookmarkFilledIcon : BookmarkOutlineIcon}
+              {isSaved ? 'Saved' : 'Save'}
+            </button>
             <button 
-              onClick={onChat}
-              className="w-full bg-gray-200 text-brand-dark font-bold py-3 px-4 rounded-lg hover:bg-gray-300 transition-colors">
+                onClick={() => handleAction(handleCheckUpdates)}
+                className="bg-gray-200 text-brand-dark font-bold py-3 px-4 rounded-lg hover:bg-gray-300 transition-colors">
+              Check for Updates
+            </button>
+            <button 
+              onClick={() => handleAction(onChat)}
+              className="bg-gray-200 text-brand-dark font-bold py-3 px-4 rounded-lg hover:bg-gray-300 transition-colors">
               Ask a Question
             </button>
           </div>

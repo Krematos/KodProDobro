@@ -3,10 +3,13 @@ import Header from '../components/Header';
 import { getChatConversation, getChatMessages, chatService } from '../services/chatService';
 import type { ChatMessage, ChatConversation } from '../types';
 import { CURRENT_USER } from '../constants';
+import type { NotificationPreferences } from '../App';
 
 interface ChatPageProps {
   chatId: string;
   onBack: () => void;
+  notificationPreferences: NotificationPreferences;
+  showToast: (message: string) => void;
 }
 
 const ChatMessageBubble: React.FC<{ message: ChatMessage }> = ({ message }) => {
@@ -21,7 +24,7 @@ const ChatMessageBubble: React.FC<{ message: ChatMessage }> = ({ message }) => {
     );
 };
 
-const ChatPage: React.FC<ChatPageProps> = ({ chatId, onBack }) => {
+const ChatPage: React.FC<ChatPageProps> = ({ chatId, onBack, notificationPreferences, showToast }) => {
   const [conversation, setConversation] = useState<ChatConversation | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -35,9 +38,13 @@ const ChatPage: React.FC<ChatPageProps> = ({ chatId, onBack }) => {
     setMessages(initialMessages);
     
     // Subscribe to new messages from the service
-    const handleNewMessage = (chatId: string, message: ChatMessage) => {
-        if (chatId === conversation?.id) {
+    const handleNewMessage = (newChatId: string, message: ChatMessage) => {
+        if (newChatId === chatId) {
             setMessages(prev => [...prev, message]);
+            // Simulate notification for non-user messages
+            if (message.sender === 'other' && notificationPreferences.newMessages) {
+                showToast(`Email notification: New message from ${chat?.organization.name}`);
+            }
         }
     };
     
@@ -47,7 +54,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ chatId, onBack }) => {
     return () => {
         chatService.unsubscribe(handleNewMessage);
     };
-  }, [chatId, conversation?.id]);
+  }, [chatId, showToast, notificationPreferences.newMessages, conversation]);
   
   useEffect(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

@@ -4,10 +4,16 @@ import { PROJECTS, CURRENT_USER, ORGANIZATIONS } from '../constants';
 
 interface HomePageProps {
   onProjectSelect: (projectId: string) => void;
+  isProjectSaved: (projectId: string) => boolean;
+  toggleSaveProject: (projectId: string) => void;
+  savedProjectIds: string[];
+  isAuthenticated: boolean;
+  requestLogin: () => void;
 }
+type StatusFilter = 'Saved' | 'Open' | 'In Progress' | 'Completed' | 'All';
 
-const HomePage: React.FC<HomePageProps> = ({ onProjectSelect }) => {
-  const [statusFilter, setStatusFilter] = useState<'Open' | 'In Progress' | 'Completed' | 'All'>('Open');
+const HomePage: React.FC<HomePageProps> = ({ onProjectSelect, isProjectSaved, toggleSaveProject, savedProjectIds, isAuthenticated, requestLogin }) => {
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('Open');
   const [skillFilter, setSkillFilter] = useState<string>('All');
   const [organizationFilter, setOrganizationFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -20,11 +26,15 @@ const HomePage: React.FC<HomePageProps> = ({ onProjectSelect }) => {
     return Object.values(ORGANIZATIONS).sort((a, b) => a.name.localeCompare(b.name));
   }, []);
 
-  const statusOptions: Array<'Open' | 'In Progress' | 'Completed' | 'All'> = ['Open', 'In Progress', 'Completed', 'All'];
+  const statusOptions: StatusFilter[] = ['Saved', 'Open', 'In Progress', 'Completed', 'All'];
 
   const filteredProjects = useMemo(() => {
     return PROJECTS
       .filter(project => {
+        if (statusFilter === 'Saved') {
+            if (!isAuthenticated) return false;
+            return savedProjectIds.includes(project.id);
+        }
         if (statusFilter === 'All') return true;
         return project.status === statusFilter;
       })
@@ -46,18 +56,32 @@ const HomePage: React.FC<HomePageProps> = ({ onProjectSelect }) => {
           project.tags.some(tag => tag.toLowerCase().includes(query))
         );
       });
-  }, [statusFilter, skillFilter, organizationFilter, searchQuery]);
+  }, [statusFilter, skillFilter, organizationFilter, searchQuery, savedProjectIds, isAuthenticated]);
 
   const handleApplyNow = (projectId: string) => {
+    if (!isAuthenticated) {
+        requestLogin();
+        return;
+    }
     const project = PROJECTS.find(p => p.id === projectId);
     alert(`Thank you for your interest in "${project?.title}"! Your application has been submitted for review.`);
   };
 
+  const handleToggleSave = (projectId: string) => {
+    if (!isAuthenticated) {
+        requestLogin();
+        return;
+    }
+    toggleSaveProject(projectId);
+  }
+
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-brand-dark">Hello, {CURRENT_USER.name.split(' ')[0]}!</h1>
-        <p className="text-gray-600 mt-1">Ready to make an impact? Explore projects from leading Czech non-profits.</p>
+        <h1 className="text-3xl font-bold text-brand-dark">
+          {isAuthenticated ? `Hello, ${CURRENT_USER.name.split(' ')[0]}!` : "Explore Projects"}
+        </h1>
+        <p className="text-gray-600 mt-1">Ready to make an impact? Find opportunities from leading Czech non-profits.</p>
       </div>
       
       <div className="mb-4 relative">
@@ -80,19 +104,22 @@ const HomePage: React.FC<HomePageProps> = ({ onProjectSelect }) => {
               <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Status</label>
                   <div className="flex flex-wrap gap-2">
-                    {statusOptions.map(status => (
-                       <button
-                         key={status}
-                         onClick={() => setStatusFilter(status)}
-                         className={`px-3 py-1.5 text-sm font-semibold rounded-full transition-colors ${
-                            statusFilter === status
-                                ? 'bg-brand-blue text-white shadow'
-                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                         }`}
-                       >
-                         {status}
-                       </button>
-                    ))}
+                    {statusOptions.map(status => {
+                        if (status === 'Saved' && !isAuthenticated) return null;
+                        return (
+                           <button
+                             key={status}
+                             onClick={() => setStatusFilter(status)}
+                             className={`px-3 py-1.5 text-sm font-semibold rounded-full transition-colors ${
+                                statusFilter === status
+                                    ? 'bg-brand-blue text-white shadow'
+                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                             }`}
+                           >
+                             {status}
+                           </button>
+                        )
+                    })}
                   </div>
               </div>
                <div>
@@ -138,6 +165,8 @@ const HomePage: React.FC<HomePageProps> = ({ onProjectSelect }) => {
               project={project} 
               onSelect={onProjectSelect}
               onApply={handleApplyNow} 
+              isProjectSaved={isProjectSaved}
+              toggleSaveProject={handleToggleSave}
             />
           ))
         ) : (

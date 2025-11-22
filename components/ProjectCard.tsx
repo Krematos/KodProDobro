@@ -1,11 +1,13 @@
 import React from 'react';
 import type { Project } from '../types';
-import { CodeIcon, DesignIcon, StarIcon } from '../constants';
+import { CodeIcon, DesignIcon, StarIcon, BookmarkFilledIcon, BookmarkOutlineIcon } from '../constants';
 
 interface ProjectCardProps {
   project: Project;
   onSelect: (projectId: string) => void;
   onApply: (projectId: string) => void;
+  isProjectSaved?: (projectId: string) => boolean;
+  toggleSaveProject?: (projectId: string) => void;
 }
 
 const HighlightBanner: React.FC<{ text: string }> = ({ text }) => (
@@ -15,13 +17,15 @@ const HighlightBanner: React.FC<{ text: string }> = ({ text }) => (
     </div>
 );
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ project, onSelect, onApply }) => {
+const ProjectCard: React.FC<ProjectCardProps> = ({ project, onSelect, onApply, isProjectSaved, toggleSaveProject }) => {
   const hasCodeSkill = project.requiredSkills.some(skill => 
     /react|flutter|node|python|javascript|html/i.test(skill)
   );
   const hasDesignSkill = project.requiredSkills.some(skill => 
     /design|figma|ux|ui|wireframe|mockup|illustration/i.test(skill)
   );
+
+  const isSaved = isProjectSaved ? isProjectSaved(project.id) : false;
 
   return (
     <div 
@@ -57,21 +61,37 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onSelect, onApply })
           {hasCodeSkill && <div className="p-1.5 bg-blue-200 rounded-full z-10">{CodeIcon}</div>}
           {hasDesignSkill && <div className="p-1.5 bg-teal-200 rounded-full">{DesignIcon}</div>}
         </div>
-        {project.status === 'Open' ? (
-            <button
-                onClick={(e) => {
-                    e.stopPropagation(); // Prevent card click from navigating to details
-                    onApply(project.id);
-                }}
-                className="px-4 py-2 text-sm font-bold text-white bg-accent-teal rounded-lg shadow hover:bg-opacity-80 transition-all"
-            >
-                Apply Now
-            </button>
-        ) : (
-            <span className="px-3 py-1.5 text-sm font-semibold text-gray-700 bg-gray-200 rounded-full">
-                {project.status}
-            </span>
-        )}
+        <div className="flex items-center gap-2">
+            {toggleSaveProject && (
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        toggleSaveProject(project.id);
+                    }}
+                    className={`p-2 rounded-full transition-colors ${
+                        isSaved ? 'text-accent-yellow bg-yellow-100' : 'text-gray-400 hover:bg-gray-200'
+                    }`}
+                    title={isSaved ? "Unsave Project" : "Save Project"}
+                >
+                    {isSaved ? BookmarkFilledIcon : BookmarkOutlineIcon}
+                </button>
+            )}
+            {project.status === 'Open' ? (
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation(); // Prevent card click from navigating to details
+                        onApply(project.id);
+                    }}
+                    className="px-4 py-2 text-sm font-bold text-white bg-accent-teal rounded-lg shadow hover:bg-opacity-80 transition-all"
+                >
+                    Apply Now
+                </button>
+            ) : (
+                <span className="px-3 py-1.5 text-sm font-semibold text-gray-700 bg-gray-200 rounded-full">
+                    {project.status}
+                </span>
+            )}
+        </div>
       </div>
     </div>
   );

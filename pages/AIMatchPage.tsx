@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import Header from '../components/Header';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -8,9 +7,11 @@ import type { Project } from '../types';
 
 interface AIMatchPageProps {
   onProjectSelect: (projectId: string) => void;
+  isAuthenticated: boolean;
+  requestLogin: () => void;
 }
 
-const AIMatchPage: React.FC<AIMatchPageProps> = ({ onProjectSelect }) => {
+const AIMatchPage: React.FC<AIMatchPageProps> = ({ onProjectSelect, isAuthenticated, requestLogin }) => {
   const [userDescription, setUserDescription] = useState(
     `I am a ${CURRENT_USER.fieldOfStudy} student at ${CURRENT_USER.university}. My key skills include: ${CURRENT_USER.skills.join(', ')}. I am interested in ${CURRENT_USER.interests.join(', ')}.`
   );
@@ -19,6 +20,10 @@ const AIMatchPage: React.FC<AIMatchPageProps> = ({ onProjectSelect }) => {
   const [error, setError] = useState<string | null>(null);
 
   const handleFindMatches = useCallback(async () => {
+    if (!isAuthenticated) {
+        requestLogin();
+        return;
+    }
     setIsLoading(true);
     setError(null);
     setMatches([]);
@@ -31,7 +36,7 @@ const AIMatchPage: React.FC<AIMatchPageProps> = ({ onProjectSelect }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [userDescription]);
+  }, [userDescription, isAuthenticated, requestLogin]);
 
   return (
     <div>
