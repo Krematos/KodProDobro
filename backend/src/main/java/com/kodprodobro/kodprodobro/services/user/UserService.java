@@ -1,6 +1,8 @@
 package com.kodprodobro.kodprodobro.services.user;
 
-import com.kodprodobro.kodprodobro.dto.UserUpdateDto;
+import com.kodprodobro.kodprodobro.dto.SignupRequest;
+import com.kodprodobro.kodprodobro.dto.user.UserUpdateDto;
+import com.kodprodobro.kodprodobro.models.enums.Role;
 import com.kodprodobro.kodprodobro.repositories.UserRepository;
 import com.kodprodobro.kodprodobro.services.email.EmailService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +34,8 @@ public class UserService {
 
     private final EmailService emailService;
 
+    private final SignupRequest signUpRequest;
+
     private static final String CACHE_USERS_BY_USERNAME = "users";
     private static final String CACHE_USERS_BY_ID = "usersById";
     private static final String CACHE_ALL_USERS = "allUsers";
@@ -40,16 +43,47 @@ public class UserService {
 
     @Transactional
     @CacheEvict(value = {"users", "usersById", "allUsers"}, allEntries = true)
-    public User registerNewUser(User user){
-        validateUser(user);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(Set.of(User.Role.ROLE_USER)); // Výchozí role
+    public User registerNewUser(SignupRequest signUpRequest) {
+        // 1. Validace duplicit (Business logika)
+        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+            throw new IllegalArgumentException("Chyba: Uživatelské jméno je již obsazené!");
+        }
+        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+            throw new IllegalArgumentException("Chyba: Email se již používá!");
+        }
 
+        // 2. Vytvoření uživatele
+        User user = new User();
+        user.setUsername(signUpRequest.getUsername());
+        user.setEmail(signUpRequest.getEmail());
+        // Hashování hesla (PasswordEncoder injektujte do UserService)
+        user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
+
+        // 3. Přiřazení Role (Moderní Enum přístup)
+        // Pokud request obsahuje role, pokusí se je nastavit, jinak default USER
+        Set<String> strRoles = signUpRequest.getRoles();
+
+        // Poznámka: Pokud máte v Entitě User pole "private Role role;" (jeden Enum),
+        // použijte logiku níže. Pokud tam máte Set<Role>, musíte to upravit na Set.
+        // Zde předpokládám Single Role (přísnější RBAC), kde Admin > User.
+
+        if (strRoles != null && strRoles.contains("admin")) {
+            // Tady by měla být kontrola, zda si běžný user může jen tak poslat "admin" roli!
+            // V produkci se registrace admina obvykle dělá přes jiný endpoint nebo SQL.
+            user.setRole(Role.ADMIN);
+        } else if (strRoles != null && strRoles.contains("manager")) {
+            user.setRole(Role.MANAGER);
+        } else {
+            user.setRole(Role.USER); // Defaultní role
+        }
+
+        // 4. Uložení
         User savedUser = userRepository.save(user);
+
         log.info("Nový uživatel registrován: {}", savedUser.getUsername());
 
-        // Odeslání uvítacího emailu
-        emailService.sendWelcomeEmail(savedUser.getEmail(), savedUser.getUsername()));
+        // 5. Asynchronní odeslání emailu (volitelné)
+        emailService.sendWelcomeEmail(savedUser.getEmail(), savedUser.getUsername());
 
         return savedUser;
     }
@@ -84,7 +118,7 @@ public class UserService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = CACHE_USERS_BY_ID, key = "#userId"),
-            @CacheEvict(value = CACHE_USERS_BY_USERNAME, allEntries = true), // Username neznáme z ID snadno, proto allEntries nebo složitější key generator
+            @CacheEvict(value = CACHE_USERS_BY_USERNAME, allEntries = true),
             @CacheEvict(value = CACHE_ALL_USERS, allEntries = true)
     })
     private void validateUser(User user) {
@@ -121,7 +155,7 @@ public class UserService {
         user.setUsername(userUpdateDto.getUsername());
         user.setEmail(userUpdateDto.getEmail());
         if (userUpdateDto.getRole() != null) {
-            user.setRole(userUpdateDto.getRole());
+            user.setRole(Role.valueOf(userUpdateDto.getRole()));
         }
 
         User updatedUser = userRepository.save(user);

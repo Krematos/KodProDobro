@@ -1,5 +1,6 @@
 package com.kodprodobro.kodprodobro.models;
 
+import com.kodprodobro.kodprodobro.models.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -39,13 +40,8 @@ public class User implements UserDetails {
     private String firstName;
     private String lastName;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> roles = new HashSet<>();
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @Column(name = "password_reset_token")
     private String passwordResetToken;
@@ -73,9 +69,7 @@ public class User implements UserDetails {
     // UserDetails methods
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-                .collect(Collectors.toList());
+        return role.getAuthorities();
     }
 
     @Override

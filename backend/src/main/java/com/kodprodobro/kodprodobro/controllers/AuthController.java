@@ -1,23 +1,20 @@
 package com.kodprodobro.kodprodobro.controllers;
 
-import com.kodprodobro.kodprodobro.dto.LoginRequest;
+import com.kodprodobro.kodprodobro.dto.auth.LoginRequest;
 import com.kodprodobro.kodprodobro.dto.MessageResponse;
 import com.kodprodobro.kodprodobro.dto.SignupRequest;
-import com.kodprodobro.kodprodobro.models.ERole;
-import com.kodprodobro.kodprodobro.models.Role;
+import com.kodprodobro.kodprodobro.models.enums.Role;
 import com.kodprodobro.kodprodobro.models.User;
 import com.kodprodobro.kodprodobro.repositories.RoleRepository;
 import com.kodprodobro.kodprodobro.repositories.UserRepository;
 import com.kodprodobro.kodprodobro.security.JwtTokenProvider;
-import com.kodprodobro.kodprodobro.services.BlacklistService;
+import com.kodprodobro.kodprodobro.security.services.BlacklistService;
 import com.kodprodobro.kodprodobro.services.email.EmailService;
 import com.kodprodobro.kodprodobro.services.user.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -66,6 +63,7 @@ public class AuthController {
 
     private final BlacklistService blacklistService;
 
+
     @Value("${app.frontend.url}")
     private String frontendUrl;
 
@@ -103,51 +101,18 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody SignupRequest signUpRequest) {
         log.info("POST /api/auth/register - Pokus o registraci uživatele: {}", signUpRequest.getUsername());
-        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+        try {
+            // Registrace nového uživatele
+            userService.registerNewUser(signUpRequest);
+            log.info("Uživatel {} byl úspěšně zaregistrován.", signUpRequest.getUsername());
+            return ResponseEntity.ok(new MessageResponse("Uživatel byl úspěšně zaregistrován!"));
+        } catch (IllegalArgumentException e) {
+            // Odchytit chyby jako duplicitní uživatelské jméno/email
+            log.error("Chyba při registraci uživatele {}: {}", signUpRequest.getUsername(), e.getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: Username is already taken!"));
+                    .body(new MessageResponse("Chyba: " + e.getMessage()));
         }
-
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Email is already in use!"));
-        }
-
-        // Create new user's account
-        User user = new User();
-        user.setUsername(signUpRequest.getUsername());
-        user.setEmail(signUpRequest.getEmail());
-        user.setPassword(encoder.encode(signUpRequest.getPassword()));
-
-        Set<String> strRoles = signUpRequest.getRoles();
-        Set<Role> roles = new HashSet<>();
-
-        if (strRoles == null) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(adminRole);
-                        break;
-                    default:
-                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(userRole);
-                }
-            });
-        }
-
-        user.setRoles(roles);
-        userRepository.save(user);
-
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 
     @PostMapping("/forgot-password")

@@ -1,4 +1,4 @@
-package com.kodprodobro.kodprodobro.services;
+package com.kodprodobro.kodprodobro.security.services;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;

@@ -1,4 +1,4 @@
-package com.kodprodobro.kodprodobro.dto;
+package com.kodprodobro.kodprodobro.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

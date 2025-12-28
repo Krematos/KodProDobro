@@ -1,4 +1,4 @@
-package com.kodprodobro.kodprodobro.services;
+package com.kodprodobro.kodprodobro.security.services;
 
 
 import com.kodprodobro.kodprodobro.models.RevokedToken;

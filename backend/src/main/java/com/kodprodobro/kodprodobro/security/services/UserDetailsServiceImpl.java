@@ -1,4 +1,4 @@
-package com.kodprodobro.kodprodobro.security;
+package com.kodprodobro.kodprodobro.security.services;
 
 import com.kodprodobro.kodprodobro.models.User;
 import com.kodprodobro.kodprodobro.repositories.UserRepository;

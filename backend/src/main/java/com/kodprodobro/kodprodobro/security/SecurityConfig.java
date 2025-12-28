@@ -1,6 +1,6 @@
 package com.kodprodobro.kodprodobro.security;
 
-import com.kodprodobro.kodprodobro.services.BlacklistService;
+import com.kodprodobro.kodprodobro.security.services.BlacklistService;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
