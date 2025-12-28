@@ -1,5 +1,6 @@
 package com.kodprodobro.kodprodobro.services.user;
 
+import com.kodprodobro.kodprodobro.dto.UserUpdateDto;
 import com.kodprodobro.kodprodobro.repositories.UserRepository;
 import com.kodprodobro.kodprodobro.services.email.EmailService;
 import lombok.RequiredArgsConstructor;
@@ -7,11 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 import com.kodprodobro.kodprodobro.models.User;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +24,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserService {
 
     private final UserRepository userRepository;
@@ -28,6 +32,10 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final EmailService emailService;
+
+    private static final String CACHE_USERS_BY_USERNAME = "users";
+    private static final String CACHE_USERS_BY_ID = "usersById";
+    private static final String CACHE_ALL_USERS = "allUsers";
 
 
     @Transactional
@@ -38,15 +46,15 @@ public class UserService {
         user.setRoles(Set.of(User.Role.ROLE_USER)); // Výchozí role
 
         User savedUser = userRepository.save(user);
-
         log.info("Nový uživatel registrován: {}", savedUser.getUsername());
 
         // Odeslání uvítacího emailu
-        new Thread(() -> emailService.sendWelcomeEmail(savedUser.getEmail(), savedUser.getUsername()));
+        emailService.sendWelcomeEmail(savedUser.getEmail(), savedUser.getUsername()));
 
         return savedUser;
     }
 
+    @Transactional
     public String createPasswordResetTokenForUser(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
@@ -58,6 +66,7 @@ public class UserService {
         return token;
     }
 
+    @Transactional
     public void resetPassword(String token, String newPassword) {
         User user = userRepository.findByPasswordResetToken(token)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid password reset token"));
@@ -72,6 +81,12 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = CACHE_USERS_BY_ID, key = "#userId"),
+            @CacheEvict(value = CACHE_USERS_BY_USERNAME, allEntries = true), // Username neznáme z ID snadno, proto allEntries nebo složitější key generator
+            @CacheEvict(value = CACHE_ALL_USERS, allEntries = true)
+    })
     private void validateUser(User user) {
         if (userRepository.existsByUsername(user.getUsername())) {
             log.warn("Registrace selhala - jméno {} již existuje", user.getUsername());
