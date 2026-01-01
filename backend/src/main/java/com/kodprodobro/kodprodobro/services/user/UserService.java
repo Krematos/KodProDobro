@@ -34,8 +34,6 @@ public class UserService {
 
     private final EmailService emailService;
 
-    private final SignupRequest signUpRequest;
-
     private static final String CACHE_USERS_BY_USERNAME = "users";
     private static final String CACHE_USERS_BY_ID = "usersById";
     private static final String CACHE_ALL_USERS = "allUsers";

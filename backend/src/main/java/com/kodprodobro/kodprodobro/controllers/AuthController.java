@@ -3,17 +3,14 @@ package com.kodprodobro.kodprodobro.controllers;
 import com.kodprodobro.kodprodobro.dto.auth.LoginRequest;
 import com.kodprodobro.kodprodobro.dto.MessageResponse;
 import com.kodprodobro.kodprodobro.dto.SignupRequest;
-import com.kodprodobro.kodprodobro.models.enums.Role;
 import com.kodprodobro.kodprodobro.models.User;
-import com.kodprodobro.kodprodobro.repositories.RoleRepository;
-import com.kodprodobro.kodprodobro.repositories.UserRepository;
-import com.kodprodobro.kodprodobro.security.JwtTokenProvider;
 import com.kodprodobro.kodprodobro.security.services.BlacklistService;
+import com.kodprodobro.kodprodobro.security.services.TokenService;
 import com.kodprodobro.kodprodobro.services.email.EmailService;
 import com.kodprodobro.kodprodobro.services.user.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,16 +20,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 
 @Slf4j
@@ -42,20 +35,9 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    RoleRepository roleRepository;
-
-    @Autowired
-    PasswordEncoder encoder;
-
-    @Autowired
-    JwtTokenProvider jwtTokenProvider;
+    private final TokenService tokenService;
 
     private final EmailService emailService;
 
@@ -63,12 +45,11 @@ public class AuthController {
 
     private final BlacklistService blacklistService;
 
-
     @Value("${app.frontend.url}")
     private String frontendUrl;
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         log.info("POST /api/auth/login - Pokus o přihlášení uživatele: {}", loginRequest.getUsername());
         try {
             Authentication authentication = authenticationManager.authenticate(
@@ -76,17 +57,16 @@ public class AuthController {
                             loginRequest.getUsername(),
                             loginRequest.getPassword()));
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            String jwt = jwtTokenProvider.generateToken(authentication);
+            String token = tokenService.generateToken(authentication);
 
-            log.info("Uživatel {} byl úspěšně přihlášen.", loginRequest.getUsername());
+
             User userDetails = (User) authentication.getPrincipal();
             List<String> roles = userDetails.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .toList();
-
+            log.info("Uživatel {} byl úspěšně přihlášen.", loginRequest.getUsername());
             return ResponseEntity.ok(Map.of(
-                    "token", jwt,
+                    "token", token,
                     "username", userDetails.getUsername(),
                     "roles", userDetails.getAuthorities()
             ));

@@ -1,6 +1,5 @@
 package com.kodprodobro.kodprodobro.security.services;
 
-import com.kodprodobro.kodprodobro.models.User;
 import com.kodprodobro.kodprodobro.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

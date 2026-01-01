@@ -1,5 +1,6 @@
 package com.kodprodobro.kodprodobro.security.services;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -42,7 +43,7 @@ public class TokenService {
         // Důležité: Musí specifikovat algoritmus HS512, aby seděl ke klíči
         JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS512).build();
 
-        return encoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
+        return this.encoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
     }
 
 }
