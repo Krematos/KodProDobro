@@ -64,9 +64,9 @@ export const CogIcon = (
 );
 
 export const StarIcon = (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-    </svg>
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+  </svg>
 );
 
 
@@ -76,7 +76,7 @@ export const ORGANIZATIONS: Record<string, Organization> = {
     id: 'adra',
     name: 'ADRA Česká republika',
     logoUrl: 'https://picsum.photos/seed/adra/100/100',
-    description: 'A global humanitarian organization that provides disaster relief and development assistance.',
+    description: 'Globální humanitární organizace poskytující pomoc při katastrofách a rozvojovou pomoc.',
     website: 'https://adra.cz',
     isCommunityChampion: true,
     projectsPosted: 2,
@@ -85,7 +85,7 @@ export const ORGANIZATIONS: Record<string, Organization> = {
     id: 'red-cross',
     name: 'Český červený kříž',
     logoUrl: 'https://picsum.photos/seed/redcross/100/100',
-    description: 'Part of the International Red Cross and Red Crescent Movement, providing humanitarian aid.',
+    description: 'Součást Mezinárodního hnutí Červeného kříže a Červeného půlměsíce, poskytující humanitární pomoc.',
     website: 'https://cervenykriz.eu',
     isCommunityChampion: false,
     projectsPosted: 1,
@@ -94,7 +94,7 @@ export const ORGANIZATIONS: Record<string, Organization> = {
     id: 'clovek',
     name: 'Člověk v tísni',
     logoUrl: 'https://picsum.photos/seed/clovek/100/100',
-    description: 'A non-governmental, non-profit organization focused on humanitarian aid and human rights.',
+    description: 'Nevládní nezisková organizace zaměřená na humanitární pomoc a lidská práva.',
     website: 'https://www.clovekvtisni.cz',
     isCommunityChampion: false,
     projectsPosted: 1,
@@ -104,45 +104,45 @@ export const ORGANIZATIONS: Record<string, Organization> = {
 export const PROJECTS: Project[] = [
   {
     id: 'p1',
-    title: 'Volunteer Management Mobile App',
+    title: 'Mobilní aplikace pro správu dobrovolníků',
     organization: ORGANIZATIONS.adra,
-    summary: 'Design and build a cross-platform mobile app for coordinating volunteers during emergency responses.',
-    description: 'The goal of this project is to create an intuitive mobile application for both iOS and Android that helps ADRA coordinators to efficiently manage and communicate with volunteers. Key features should include event registration, real-time notifications, task assignment, and a resource center. Students will gain experience in mobile development, UX/UI for critical applications, and backend integration.',
-    requiredSkills: ['React Native / Flutter', 'Firebase', 'UI/UX Design', 'Node.js (optional)'],
-    timeline: '3-4 months',
-    commitment: '10-15 hours/week',
-    deliverables: ['UI/UX Wireframes', 'Functional Prototype', 'Full-featured mobile app', 'Backend API documentation'],
+    summary: 'Navrhněte a vytvořte multiplatformní mobilní aplikaci pro koordinaci dobrovolníků během nouzových reakcí.',
+    description: 'Cílem tohoto projektu je vytvořit intuitivní mobilní aplikaci pro iOS a Android, která pomůže koordinátorům ADRA efektivně řídit a komunikovat s dobrovolníky. Klíčové funkce by měly zahrnovat registraci událostí, upozornění v reálném čase, přidělování úkolů a centrum zdrojů. Studenti získají zkušenosti s mobilním vývojem, UI/UX pro kritické aplikace a integrací backendu.',
+    requiredSkills: ['React Native / Flutter', 'Firebase', 'UI/UX Design', 'Node.js (volitelné)'],
+    timeline: '3-4 měsíce',
+    commitment: '10-15 hodin/týden',
+    deliverables: ['UI/UX Wireframes', 'Funkční prototyp', 'Plně funkční mobilní aplikace', 'Dokumentace backend API'],
     status: 'Open',
-    tags: ['mobile', 'social-impact', 'emergency-response'],
+    tags: ['mobilní', 'sociální dopad', 'nouzová reakce'],
     impactScore: 150,
     highlight: 'Featured',
   },
   {
     id: 'p2',
-    title: 'Donation Platform Website Revamp',
+    title: 'Revamp dárcovské platformy',
     organization: ORGANIZATIONS['red-cross'],
-    summary: 'Redesign the main donation portal for the Czech Red Cross to improve user experience and increase contributions.',
-    description: 'We are looking for talented web developers and designers to overhaul our existing donation website. The current site has a low conversion rate. The new platform should be modern, responsive, secure, and provide a seamless donation process. Integration with payment gateways and a donor dashboard are key requirements. This is a great opportunity to work on a high-traffic site with a real-world impact.',
-    requiredSkills: ['React / Vue.js', 'UI/UX Design', 'Stripe/PayPal API', 'Accessibility (WCAG)'],
-    timeline: '2 months',
-    commitment: '8-12 hours/week',
-    deliverables: ['User research report', 'High-fidelity mockups', 'Responsive website'],
+    summary: 'Přepracujte hlavní dárcovský portál Českého červeného kříže pro zlepšení uživatelského zážitku a zvýšení příspěvků.',
+    description: 'Hledáme talentované webové vývojáře a designéry pro přepracování našeho stávajícího dárcovského webu. Současný web má nízký konverzní poměr. Nová platforma by měla být moderní, responzivní, bezpečná a poskytovat bezproblémový proces dárcovství. Integrace s platebními bránami a dárcovský dashboard jsou klíčové požadavky. Je to skvělá příležitost pracovat na vysoce navštěvovaném webu s reálným dopadem.',
+    requiredSkills: ['React / Vue.js', 'UI/UX Design', 'Stripe/PayPal API', 'Přístupnost (WCAG)'],
+    timeline: '2 měsíce',
+    commitment: '8-12 hodin/týden',
+    deliverables: ['Zpráva z uživatelského výzkumu', 'High-fidelity mockups', 'Responzivní web'],
     status: 'Open',
     tags: ['web', 'ux-design', 'fintech'],
     impactScore: 100,
   },
   {
     id: 'p3',
-    title: 'Educational Game for Human Rights',
+    title: 'Vzdělávací hra o lidských právech',
     organization: ORGANIZATIONS.clovek,
-    summary: 'Develop an interactive web-based game to educate high school students about human rights issues.',
-    description: 'As part of our educational outreach program, we want to create an engaging online game that teaches students about global human rights. The game should feature storytelling, quizzes, and decision-making scenarios. We need a team with skills in game development, illustration, and web technologies to bring this vision to life. The project is supported by the AV21 Strategy grant.',
-    requiredSkills: ['JavaScript (Phaser, etc.)', 'Illustration', 'Storytelling', 'HTML5/CSS3'],
-    timeline: '4 months',
-    commitment: '10 hours/week',
-    deliverables: ['Game design document', 'Playable game demo', 'Final web game'],
+    summary: 'Vyviňte interaktivní webovou hru pro vzdělávání středoškoláků o problémech lidských práv.',
+    description: 'V rámci našeho vzdělávacího programu chceme vytvořit poutavou online hru, která učí studenty o globálních lidských právech. Hra by měla obsahovat příběh, kvízy a scénáře rozhodování. Potřebujeme tým se znalostmi vývoje her, ilustrace a webových technologií, aby tuto vizi oživil. Projekt je podporován grantem Strategie AV21.',
+    requiredSkills: ['JavaScript (Phaser, atd.)', 'Ilustrace', 'Vyprávění příběhů', 'HTML5/CSS3'],
+    timeline: '4 měsíce',
+    commitment: '10 hodin/týden',
+    deliverables: ['Dokumentace herního designu', 'Hratelné demo hry', 'Finální webová hra'],
     status: 'In Progress',
-    tags: ['education', 'gamification', 'human-rights'],
+    tags: ['vzdělávání', 'gamifikace', 'lidská práva'],
     impactScore: 120,
     highlight: 'First Mover',
   },
@@ -152,13 +152,13 @@ export const CURRENT_USER: User = {
   id: 'u1',
   name: 'Jana Nováková',
   avatarUrl: 'https://picsum.photos/seed/jana/200/200',
-  university: 'Czech Technical University in Prague (ČVUT)',
-  fieldOfStudy: 'Computer Science & Engineering',
+  university: 'České vysoké učení technické v Praze (ČVUT)',
+  fieldOfStudy: 'Informatika',
   skills: ['React', 'TypeScript', 'Node.js', 'Python', 'Figma', 'UX Research'],
-  bio: 'A passionate developer and designer looking to apply my skills to projects that make a difference. I am particularly interested in educational technology and applications for social good. I am a team player with strong problem-solving abilities.',
-  interests: ['Frontend development', 'UI/UX design', 'data visualization', 'social impact projects', 'mobile apps'],
+  bio: 'Vášnivá vývojářka a designérka, která chce uplatnit své dovednosti na projektech, které mají smysl. Zvláště mě zajímají vzdělávací technologie a aplikace pro sociální dobro. Jsem týmový hráč se silnými schopnostmi řešení problémů.',
+  interests: ['Frontend vývoj', 'UI/UX design', 'vizualizace dat', 'projekty sociálního dopadu', 'mobilní aplikace'],
   portfolio: [
-      {...PROJECTS[2], status: 'Completed' } // Completed project example
+    { ...PROJECTS[2], status: 'Completed' } // Completed project example
   ],
   xp: 1250,
   level: 5,
@@ -167,56 +167,56 @@ export const CURRENT_USER: User = {
 };
 
 export const MOCK_CHAT_LIST: ChatConversation[] = [
-    { 
-        id: 'chat1', 
-        organization: ORGANIZATIONS.adra,
-        projectTitle: PROJECTS[0].title,
-        lastMessage: 'Excellent! That\'s great to hear. We\'d love to schedule a brief call...',
-        timestamp: '10:10 AM',
-        unreadCount: 1,
-    },
-    { 
-        id: 'chat2', 
-        organization: ORGANIZATIONS['red-cross'],
-        projectTitle: PROJECTS[1].title,
-        lastMessage: 'You: Can you tell me more about the payment gateway integration?',
-        timestamp: 'Yesterday',
-        unreadCount: 0,
-    }
+  {
+    id: 'chat1',
+    organization: ORGANIZATIONS.adra,
+    projectTitle: PROJECTS[0].title,
+    lastMessage: 'Výborně! To rádi slyšíme. Rádi bychom si domluvi...',
+    timestamp: '10:10',
+    unreadCount: 1,
+  },
+  {
+    id: 'chat2',
+    organization: ORGANIZATIONS['red-cross'],
+    projectTitle: PROJECTS[1].title,
+    lastMessage: 'Vy: Můžete mi říct více o integraci pla...',
+    timestamp: 'Včera',
+    unreadCount: 0,
+  }
 ];
 
 export const MOCK_CHAT_MESSAGES: Record<string, ChatMessage[]> = {
-    'chat1': [
-        { id: 1, sender: 'other', text: 'Hi Jana, thanks for your interest in the Volunteer Management App project!', timestamp: '10:01 AM', avatar: ORGANIZATIONS.adra.logoUrl },
-        { id: 2, sender: 'other', text: 'Your profile looks like a great fit. Do you have any experience with Firebase?', timestamp: '10:02 AM', avatar: ORGANIZATIONS.adra.logoUrl },
-        { id: 3, sender: 'user', text: 'Hi! Thank you for reaching out. Yes, I\'ve used Firebase for authentication and Firestore in a few personal projects.', timestamp: '10:05 AM', avatar: CURRENT_USER.avatarUrl },
-        { id: 4, sender: 'user', text: 'I\'m really excited about the potential of this app.', timestamp: '10:05 AM', avatar: CURRENT_USER.avatarUrl },
-        { id: 5, sender: 'other', text: 'Excellent! That\'s great to hear. We\'d love to schedule a brief call to discuss the project further. Are you available sometime tomorrow afternoon?', timestamp: '10:10 AM', avatar: ORGANIZATIONS.adra.logoUrl },
-    ],
-    'chat2': [
-        { id: 1, sender: 'other', text: 'Hello Jana, thank you for applying to the Donation Platform Revamp project.', timestamp: 'Yesterday', avatar: ORGANIZATIONS['red-cross'].logoUrl },
-        { id: 2, sender: 'user', text: 'Hello! I\'m very interested. Can you tell me more about the payment gateway integration?', timestamp: 'Yesterday', avatar: CURRENT_USER.avatarUrl },
-    ]
+  'chat1': [
+    { id: 1, sender: 'other', text: 'Ahoj Jano, díky za zájem o projekt Mobilní aplikace pro správu dobrovolníků!', timestamp: '10:01', avatar: ORGANIZATIONS.adra.logoUrl },
+    { id: 2, sender: 'other', text: 'Tvůj profil vypadá skvěle. Máš nějaké zkušenosti s Firebase?', timestamp: '10:02', avatar: ORGANIZATIONS.adra.logoUrl },
+    { id: 3, sender: 'user', text: 'Ahoj! Děkuji za oslovení. Ano, Firebase jsem použila pro autentizaci a Firestore v několika osobních projektech.', timestamp: '10:05', avatar: CURRENT_USER.avatarUrl },
+    { id: 4, sender: 'user', text: 'Mám opravdu zájem o potenciál této aplikace.', timestamp: '10:05', avatar: CURRENT_USER.avatarUrl },
+    { id: 5, sender: 'other', text: 'Výborně! To rádi slyšíme. Rádi bychom si domluvili krátký hovor pro prodiskutování projektu. Máš zítra odpoledne čas?', timestamp: '10:10', avatar: ORGANIZATIONS.adra.logoUrl },
+  ],
+  'chat2': [
+    { id: 1, sender: 'other', text: 'Dobrý den Jano, děkujeme za přihlášení do projektu Revamp dárcovské platformy.', timestamp: 'Včera', avatar: ORGANIZATIONS['red-cross'].logoUrl },
+    { id: 2, sender: 'user', text: 'Dobrý den! Mám velký zájem. Můžete mi říct více o integraci platební brány?', timestamp: 'Včera', avatar: CURRENT_USER.avatarUrl },
+  ]
 };
 
 
 export const GAMIFICATION_BADGES: AIBadge[] = [
-    {
-        name: 'Community Builder',
-        description: 'Awarded for completing your first project with a non-profit.',
-        icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-accent-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>,
-        progress: (user) => ({ current: user.portfolio.length, target: 1 }),
-    },
-    {
-        name: 'Impact Leader',
-        description: 'Awarded for leading a project team to successful completion.',
-        icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-brand-red" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" /></svg>,
-        progress: (user) => ({ current: 0, target: 1 }), // Assuming no leadership data yet
-    },
-    {
-        name: 'Tech for Good Pro',
-        description: 'Awarded for completing three or more projects.',
-        icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-brand-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>,
-        progress: (user) => ({ current: user.portfolio.length, target: 3 }),
-    }
+  {
+    name: 'Budovatel komunity',
+    description: 'Uděleno za dokončení prvního projektu s neziskovou organizací.',
+    icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-accent-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>,
+    progress: (user) => ({ current: user.portfolio.length, target: 1 }),
+  },
+  {
+    name: 'Lídr dopadu',
+    description: 'Uděleno za vedení projektového týmu k úspěšnému dokončení.',
+    icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-brand-red" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" /></svg>,
+    progress: (user) => ({ current: 0, target: 1 }), // Assuming no leadership data yet
+  },
+  {
+    name: 'Tech for Good Profík',
+    description: 'Uděleno za dokončení tří nebo více projektů.',
+    icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-brand-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>,
+    progress: (user) => ({ current: user.portfolio.length, target: 3 }),
+  }
 ];

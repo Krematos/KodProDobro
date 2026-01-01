@@ -9,11 +9,12 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import { HomeIcon, AiSparklesIcon, ChatIcon, ProfileIcon } from './constants';
 
+// ... types remain the same
 type Page = 'home' | 'ai-match' | 'chat' | 'profile';
 type AuthPage = 'login' | 'register';
 
 const App: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [authPage, setAuthPage] = useState<AuthPage>('login');
 
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -34,10 +35,10 @@ const App: React.FC = () => {
   const navigateToProject = useCallback((projectId: string) => {
     setSelectedProjectId(projectId);
   }, []);
-  
+
   const navigateToChat = useCallback((chatId: string) => {
-      setCurrentPage('chat');
-      setSelectedChatId(chatId);
+    setCurrentPage('chat');
+    setSelectedChatId(chatId);
   }, []);
 
   const navigateBackHome = useCallback(() => {
@@ -46,9 +47,9 @@ const App: React.FC = () => {
   }, []);
 
   const navigateToChatList = useCallback(() => {
-      setSelectedProjectId(null);
-      setSelectedChatId(null);
-      setCurrentPage('chat');
+    setSelectedProjectId(null);
+    setSelectedChatId(null);
+    setCurrentPage('chat');
   }, []);
 
   const renderContent = () => {
@@ -62,7 +63,7 @@ const App: React.FC = () => {
         return <AIMatchPage onProjectSelect={navigateToProject} />;
       case 'chat':
         if (selectedChatId) {
-            return <ChatPage chatId={selectedChatId} onBack={navigateToChatList} />;
+          return <ChatPage chatId={selectedChatId} onBack={navigateToChatList} />;
         }
         return <ChatListPage onChatSelect={navigateToChat} />;
       case 'profile':
@@ -71,12 +72,12 @@ const App: React.FC = () => {
         return <HomePage onProjectSelect={navigateToProject} />;
     }
   };
-  
+
   const navItems = [
-    { page: 'home' as Page, label: 'Home', icon: HomeIcon },
+    { page: 'home' as Page, label: 'Domů', icon: HomeIcon },
     { page: 'ai-match' as Page, label: 'AI Match', icon: AiSparklesIcon },
-    { page: 'chat' as Page, label: 'Messages', icon: ChatIcon },
-    { page: 'profile' as Page, label: 'Profile', icon: ProfileIcon },
+    { page: 'chat' as Page, label: 'Zprávy', icon: ChatIcon },
+    { page: 'profile' as Page, label: 'Profil', icon: ProfileIcon },
   ];
 
   if (!isAuthenticated) {
@@ -96,7 +97,7 @@ const App: React.FC = () => {
 
       <div className="flex-grow pb-20 md:pb-0">
         <main className="max-w-4xl mx-auto p-4 w-full">
-            {renderContent()}
+          {renderContent()}
         </main>
       </div>
 

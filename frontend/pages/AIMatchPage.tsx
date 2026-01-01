@@ -35,39 +35,39 @@ const AIMatchPage: React.FC<AIMatchPageProps> = ({ onProjectSelect }) => {
 
   return (
     <div>
-      <Header title="AI Project Matcher" />
+      <Header title="AI Párování projektů" />
       <div className="bg-white rounded-xl shadow-lg p-6">
         <p className="text-gray-700 mb-4">
-          Describe your skills, interests, and what you're looking for in a project. Our AI will find the perfect match for you from our list of opportunities!
+          Popište své dovednosti, zájmy a co hledáte v projektu. Naše AI pro vás najde ideální shodu z našeho seznamu příležitostí!
         </p>
-        
+
         <textarea
           value={userDescription}
           onChange={(e) => setUserDescription(e.target.value)}
           rows={5}
           className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-blue focus:border-transparent transition"
-          placeholder="e.g., I'm a React developer passionate about education..."
+          placeholder="např. Jsem React vývojář s vášní pro vzdělávání..."
         />
-        
+
         <button
           onClick={handleFindMatches}
           disabled={isLoading}
           className="w-full mt-4 bg-brand-blue text-white font-bold py-3 px-4 rounded-lg hover:bg-opacity-90 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          {isLoading ? 'Finding Matches...' : 'Find My Perfect Project'}
+          {isLoading ? 'Hledání shod...' : 'Najít můj ideální projekt'}
         </button>
       </div>
 
       <div className="mt-8">
-        {isLoading && <LoadingSpinner message="Analyzing your profile..." />}
+        {isLoading && <LoadingSpinner message="Analyzuji váš profil..." />}
         {error && <p className="text-center text-red-500 bg-red-100 p-4 rounded-lg">{error}</p>}
         {matches.length > 0 && (
           <div>
-            <h2 className="text-2xl font-bold text-brand-dark mb-4">Your Top Matches</h2>
+            <h2 className="text-2xl font-bold text-brand-dark mb-4">Vaše nejlepší shody</h2>
             {matches.map(match => {
-                const project = PROJECTS.find(p => p.id === match.projectId);
-                if (!project) return null;
-                return <MatchCard key={match.projectId} project={project} match={match} onSelect={onProjectSelect} />;
+              const project = PROJECTS.find(p => p.id === match.projectId);
+              if (!project) return null;
+              return <MatchCard key={match.projectId} project={project} match={match} onSelect={onProjectSelect} />;
             })}
           </div>
         )}
@@ -77,38 +77,38 @@ const AIMatchPage: React.FC<AIMatchPageProps> = ({ onProjectSelect }) => {
 };
 
 interface MatchCardProps {
-    project: Project;
-    match: AIProjectMatch;
-    onSelect: (projectId: string) => void;
+  project: Project;
+  match: AIProjectMatch;
+  onSelect: (projectId: string) => void;
 }
 
 const MatchCard: React.FC<MatchCardProps> = ({ project, match, onSelect }) => {
-    return (
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-6 border-2 border-accent-yellow">
-            <div className="p-6">
-                <div className="flex items-start justify-between">
-                    <div>
-                        <p className="text-sm font-semibold text-accent-yellow">AI Recommended</p>
-                        <h3 className="text-xl font-bold text-brand-dark mt-1">{project.title}</h3>
-                        <p className="text-sm text-gray-600">by {project.organization.name}</p>
-                    </div>
-                    <div className="text-right">
-                        <div className="text-2xl font-bold text-brand-dark">{match.matchScore}%</div>
-                        <div className="text-sm text-gray-500">Match Score</div>
-                    </div>
-                </div>
-                <div className="mt-4 p-4 bg-yellow-50 rounded-lg">
-                    <p className="text-sm font-semibold text-yellow-800">Why it's a great match:</p>
-                    <p className="text-sm text-yellow-700 mt-1">{match.reasoning}</p>
-                </div>
-            </div>
-            <div className="bg-gray-50 px-6 py-3 border-t">
-                <button onClick={() => onSelect(project.id)} className="text-sm font-semibold text-brand-blue hover:underline">
-                    View Project Details &rarr;
-                </button>
-            </div>
+  return (
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-6 border-2 border-accent-yellow">
+      <div className="p-6">
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-sm font-semibold text-accent-yellow">Doporučeno AI</p>
+            <h3 className="text-xl font-bold text-brand-dark mt-1">{project.title}</h3>
+            <p className="text-sm text-gray-600">od {project.organization.name}</p>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold text-brand-dark">{match.matchScore}%</div>
+            <div className="text-sm text-gray-500">Skóre shody</div>
+          </div>
         </div>
-    );
+        <div className="mt-4 p-4 bg-yellow-50 rounded-lg">
+          <p className="text-sm font-semibold text-yellow-800">Proč je to skvělá shoda:</p>
+          <p className="text-sm text-yellow-700 mt-1">{match.reasoning}</p>
+        </div>
+      </div>
+      <div className="bg-gray-50 px-6 py-3 border-t">
+        <button onClick={() => onSelect(project.id)} className="text-sm font-semibold text-brand-blue hover:underline">
+          Zobrazit detaily projektu &rarr;
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default AIMatchPage;
