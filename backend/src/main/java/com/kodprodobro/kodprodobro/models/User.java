@@ -2,17 +2,20 @@ package com.kodprodobro.kodprodobro.models;
 
 import com.kodprodobro.kodprodobro.models.enums.Role;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -21,74 +24,82 @@ import java.util.stream.Collectors;
 @Builder
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Uživatelské jméno je povinné")
     @Column(nullable = false, unique = true)
+    @Size(min = 3, max = 30)
     private String username;
 
-    @Column(nullable = false, unique = true)
-    private String email;
-
+    @NotBlank(message = "Heslo je povinné")
     @Column(nullable = false)
-    @Size(min = 6, max = 100)
+    @Size(min = 8, max = 150)
     private String password;
 
-    private String firstName;
-    private String lastName;
-
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    @NotBlank(message = "Email je povinný")
+    @Email(message = "Neplatný formát emailu")
+    @Column(nullable = false, unique = true)
+    @Size(max = 50)
+    private String email;
 
     @Column(name = "password_reset_token")
     private String passwordResetToken;
 
     @Column(name = "password_reset_token_expiry")
-    private LocalDateTime passwordResetTokenExpiry;
+    private Instant passwordResetTokenExpiry;
 
-    // Getters and Setters...
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
 
-    @Override
-    public String getUsername() {
-        return username;
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private Instant updatedAt;
+
+    @Column(name = "roles")
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    private Set<Role> roles = new HashSet<>();
+
+    public void addRole(Role role) {
+        if (role != null) {
+            this.roles.add(role);
+        }
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void removeRole(Role role) {
+        if (role != null) {
+            this.roles.remove(role);
+        }
+    }
+    // --- Přepis equals a hashCode pro správnou práci s Hibernate proxy objekty ---
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        User user = (User) o;
+        return getId() != null && Objects.equals(getId(), user.getId());
     }
 
     @Override
-    public String getPassword() {
-        return password;
-    }
-
-
-    // UserDetails methods
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return role.getAuthorities();
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 
     @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

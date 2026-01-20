@@ -1,11 +1,11 @@
 package com.kodprodobro.kodprodobro.controllers;
 
-import com.kodprodobro.kodprodobro.dto.SendMessageRequest;
-import com.kodprodobro.kodprodobro.models.Chat;
-import com.kodprodobro.kodprodobro.models.ChatMessage;
+import com.kodprodobro.kodprodobro.dto.message.SendMessageRequest;
+import com.kodprodobro.kodprodobro.models.chat.Chat;
+import com.kodprodobro.kodprodobro.models.chat.ChatMessage;
 import com.kodprodobro.kodprodobro.models.User;
-import com.kodprodobro.kodprodobro.repositories.ChatMessageRepository;
-import com.kodprodobro.kodprodobro.repositories.ChatRepository;
+import com.kodprodobro.kodprodobro.repositories.chat.ChatMessageRepository;
+import com.kodprodobro.kodprodobro.repositories.chat.ChatRepository;
 import com.kodprodobro.kodprodobro.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -69,7 +69,7 @@ public class ChatController {
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setChat(chat);
         chatMessage.setSender(sender);
-        chatMessage.setContent(messageRequest.getContent());
+        chatMessage.setContent(messageRequest.content());
 
         ChatMessage savedMessage = chatMessageRepository.save(chatMessage);
         return ResponseEntity.ok(savedMessage);

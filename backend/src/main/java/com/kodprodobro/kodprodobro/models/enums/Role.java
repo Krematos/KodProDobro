@@ -31,6 +31,8 @@ public enum Role {
         )
     );
 
+
+
     @Getter
     private final Set<Permission> permissions;
 
@@ -41,7 +43,7 @@ public enum Role {
                 .map(permission -> new SimpleGrantedAuthority(permission.getPermission()))
                 .collect(Collectors.toList());
 
-        // Přidáme i samotnou roli (aby fungovalo i staré hasRole('ADMIN'))
+        // Přidá i samotnou roli (aby fungovalo i staré hasRole('ADMIN'))
         authorities.add(new SimpleGrantedAuthority("ROLE_" + this.name()));
 
         return authorities;

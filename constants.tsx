@@ -176,25 +176,27 @@ export const CURRENT_USER: User = {
   bio: 'Jsem zapálená vývojářka a designérka, která chce uplatnit své dovednosti na projektech, které mají smysl. Zvláště mě zajímají vzdělávací technologie a aplikace pro sociální dobro. Jsem týmový hráč se silnými schopnostmi řešit problémy.',
   interests: ['Frontend vývoj', 'UI/UX design', 'vizualizace dat', 'projekty se sociálním dopadem', 'mobilní aplikace'],
   portfolio: [
-      {...PROJECTS[2], status: 'Completed' } // Completed project example
+      { ...PROJECTS[2], status: 'Completed', title: 'Historický projekt 1: Lidská práva' },
+      { ...PROJECTS[0], status: 'In Progress', title: 'Aktivní spolupráce: Mobilní koordinace' },
+      { ...PROJECTS[1], status: 'Completed', title: 'Dokončený redesign webu' }
   ],
   xp: 1250,
   level: 5,
   contributionStreak: 1,
-  totalImpact: 120,
+  totalImpact: 270,
 };
 
 export const MOCK_CHAT_LIST: ChatConversation[] = [
-    { 
-        id: 'chat1', 
+    {
+        id: 'chat1',
         organization: ORGANIZATIONS.adra,
         projectTitle: PROJECTS[0].title,
         lastMessage: 'Skvělé! To rádi slyšíme. Rádi bychom si domluvili krátký hovor...',
         timestamp: '10:10',
         unreadCount: 1,
     },
-    { 
-        id: 'chat2', 
+    {
+        id: 'chat2',
         organization: ORGANIZATIONS['red-cross'],
         projectTitle: PROJECTS[1].title,
         lastMessage: 'Vy: Můžete mi říct více o integraci platební brány?',
@@ -223,7 +225,7 @@ export const GAMIFICATION_BADGES: AIBadge[] = [
         name: 'Budovatel komunity',
         description: 'Uděleno za dokončení vašeho prvního projektu s neziskovou organizací.',
         icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-accent-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>,
-        progress: (user) => ({ current: user.portfolio.length, target: 1 }),
+        progress: (user) => ({ current: user.portfolio.filter(p => p.status === 'Completed').length, target: 1 }),
     },
     {
         name: 'Lídr dopadu',
@@ -235,6 +237,6 @@ export const GAMIFICATION_BADGES: AIBadge[] = [
         name: 'Profesionál Tech for Good',
         description: 'Uděleno za dokončení tří a více projektů.',
         icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-brand-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>,
-        progress: (user) => ({ current: user.portfolio.length, target: 3 }),
+        progress: (user) => ({ current: user.portfolio.filter(p => p.status === 'Completed').length, target: 3 }),
     }
 ];

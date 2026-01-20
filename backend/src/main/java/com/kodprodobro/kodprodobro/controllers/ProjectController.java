@@ -1,14 +1,16 @@
 package com.kodprodobro.kodprodobro.controllers;
 
-import com.kodprodobro.kodprodobro.dto.ProjectRequest;
+import com.kodprodobro.kodprodobro.dto.project.ProjectRequest;
 import com.kodprodobro.kodprodobro.models.Project;
 import com.kodprodobro.kodprodobro.models.User;
 import com.kodprodobro.kodprodobro.repositories.ProjectRepository;
 import com.kodprodobro.kodprodobro.repositories.UserRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/projects")
 @RequiredArgsConstructor
@@ -33,9 +34,10 @@ public class ProjectController {
     public List<Project> getAllProjects() {
         return projectRepository.findAll();
     }
-
+    /*
     @PostMapping
-    public ResponseEntity<Project> createProject(@RequestBody ProjectRequest projectRequest) {
+    @PreAuthorize("hasRole('NONPROFIT')")
+    public ResponseEntity<Project> createProject(@Valid @RequestBody ProjectRequest projectRequest) {
         log.info("POST /api/projects - Vytvoření nového projektu: {}", projectRequest.getName());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
@@ -61,7 +63,8 @@ public class ProjectController {
     }
 
     @PutMapping("/{projectId}")
-    public ResponseEntity<Project> updateProject(@PathVariable Long projectId, @RequestBody ProjectRequest projectRequest) {
+    @PreAuthorize("hasRole('NONPROFIT')")
+    public ResponseEntity<Project> updateProject(@Valid @PathVariable Long projectId, @RequestBody ProjectRequest projectRequest) {
         log.info("PUT /api/projects/{} - Aktualizace projektu: {}", projectId, projectRequest.getName());
         Optional<Project> projectOptional = projectRepository.findById(projectId);
         if (projectOptional.isEmpty()) {
@@ -74,5 +77,5 @@ public class ProjectController {
 
         Project updatedProject = projectRepository.save(project);
         return ResponseEntity.ok(updatedProject);
-    }
+    }*/
 }
