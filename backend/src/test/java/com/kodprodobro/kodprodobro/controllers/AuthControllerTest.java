@@ -6,7 +6,6 @@ import com.kodprodobro.kodprodobro.dto.auth.LoginRequest;
 import com.kodprodobro.kodprodobro.dto.auth.RegisterRequest;
 import com.kodprodobro.kodprodobro.models.User;
 import com.kodprodobro.kodprodobro.models.enums.Role;
-import com.kodprodobro.kodprodobro.security.JwtAuthenticationFilter;
 import com.kodprodobro.kodprodobro.services.JwtService;
 import com.kodprodobro.kodprodobro.services.email.EmailService;
 import com.kodprodobro.kodprodobro.services.user.UserDetailsImpl;
@@ -24,7 +23,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -41,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthController.class)
-@Import({SecurityConfig.class, JwtAuthenticationFilter.class})
+@Import({SecurityConfig.class})
 @AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource(properties = {
         "jwt.secret=mySuperSecretKeyForTestingPurposesThatIsLongEnough123456789",

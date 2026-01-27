@@ -1,8 +1,11 @@
 package com.kodprodobro.kodprodobro.config;
 
-import com.kodprodobro.kodprodobro.security.JwtAuthenticationFilter;
-import com.kodprodobro.kodprodobro.services.user.UserDetailsServiceImpl;
-import lombok.AllArgsConstructor;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.OctetSequenceKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,73 +20,108 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.*;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
-@AllArgsConstructor
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-    // 🌍 umožní definovat frontend URL v application.properties
-    @Value("${app.cors.allowed-origins:http://localhost:5173,http://localhost:5174}")
+    @Value("${app.cors.allowed-origins:http://localhost:5173,http://localhost:3000}")
     private String[] allowedOrigins;
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final UserDetailsServiceImpl userDetailsService;
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                // Aktivuje CORS konfiguraci definovanou níže
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // --- Povolení endpointů ---
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll() // Swagger API dokumentace
-                        .requestMatchers("/api/auth/**").permitAll() // registrace, login
-                        .requestMatchers("/uploads/**").permitAll() // přístup k obrázkům bez přihlášení
-                        .requestMatchers("GET", "/api/categories").permitAll() // Zobrazení kategorií bez přihlášení
-                        .requestMatchers("GET", "/api/images/**").permitAll() // Zobrazení obrázků bez přihlášení
-                        .requestMatchers(HttpMethod.POST, "/api/products/admin/**").hasRole("ADMIN")// Vytváření produktů pouze pro Admin
-                        .requestMatchers(HttpMethod.PUT, "/api/products/admin/**").hasRole("ADMIN") // Aktualizace produktů pouze pro Admin
-                        .requestMatchers(HttpMethod.DELETE, "/api/products/admin/**").hasRole("ADMIN") // Mazání produktů pouze pro Admin
-                        .requestMatchers("/api/auth/forgot-password", "/api/auth/reset-password").permitAll() // Povolit přístup k resetu hesla
-                        .requestMatchers("/error/**").permitAll() // Povolit přístup k chybovým stránkám
-                        .anyRequest().authenticated())
+                        // Veřejné endpointy (dokumentace, auth, obrázky)
+                        .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/error/**").permitAll()
+
+                        // Veřejné čtení dat
+                        .requestMatchers(HttpMethod.GET, "/api/categories").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/projects/**").permitAll()
+
+                        // Admin sekce (zbytek zabezpečen přes @PreAuthorize v controllerech)
+                        .requestMatchers("/api/projects/admin/**").hasRole("ADMIN")
+
+                        // Vše ostatní musí být přihlášeno
+                        .anyRequest().authenticated()
+                )
+
+                // Nastavení JWT jako způsobu autentizace
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt
+                                .decoder(jwtDecoder())
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                        )
+                )
+
+                // Ošetření chyb (vrací 401 místo přesměrování na login page)
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .userDetailsService(userDetailsService)
+
                 .build();
     }
 
-    // 2. Definice pravidel pro CORS
+    // --- BEANY PRO PRÁCI S JWT ---
+
+    // 1. Dekodér: Ověřuje podpis tokenu, který přijde z frontendu
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-
-        // Použije pole načtené přes @Value
-        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins));
-
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setExposedHeaders(List.of("Authorization", "Content-Type"));
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
+    public JwtDecoder jwtDecoder() {
+        SecretKey key = new SecretKeySpec(jwtSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA512");
+        return NimbusJwtDecoder.withSecretKey(key).macAlgorithm(MacAlgorithm.HS512).build();
     }
+
+    // 2. Enkodér: Vytváří nové tokeny (používá ho AuthService)
+    @Bean
+    public JwtEncoder jwtEncoder() {
+        SecretKey key = new SecretKeySpec(jwtSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA512");
+        JWKSource<SecurityContext> immutableSecret = new ImmutableJWKSet<>(new JWKSet(
+                new OctetSequenceKey.Builder(key).algorithm(JWSAlgorithm.HS512).build()
+        ));
+        return new NimbusJwtEncoder(immutableSecret);
+    }
+
+    // 3. Konvertor Rolí: Říká Springu, jak vytáhnout role z tokenu
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        grantedAuthoritiesConverter.setAuthoritiesClaimName("roles"); // Očekáváme pole "roles" v JSONu tokenu
+        grantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");      // Přidáme prefix ROLE_
+
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+        return jwtAuthenticationConverter;
+    }
+
+    // --- OSTATNÍ BEANY ---
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -93,6 +131,21 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
 

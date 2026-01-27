@@ -1,4 +1,4 @@
-package com.kodprodobro.kodprodobro.exception;
+package com.kodprodobro.kodprodobro.exception.user;
 
 public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException(String message) {

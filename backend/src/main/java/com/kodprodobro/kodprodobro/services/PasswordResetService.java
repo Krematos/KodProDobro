@@ -1,6 +1,6 @@
 package com.kodprodobro.kodprodobro.services;
 
-import com.kodprodobro.kodprodobro.exception.TokenExpiredException;
+import com.kodprodobro.kodprodobro.exception.token.TokenExpiredException;
 import com.kodprodobro.kodprodobro.models.User;
 import com.kodprodobro.kodprodobro.models.token.PasswordResetToken;
 import com.kodprodobro.kodprodobro.repositories.PasswordResetRepository;

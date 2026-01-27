@@ -1,4 +1,4 @@
-package com.kodprodobro.kodprodobro.exception;
+package com.kodprodobro.kodprodobro.exception.token;
 
 public class TokenExpiredException extends RuntimeException {
     public TokenExpiredException(String token) {

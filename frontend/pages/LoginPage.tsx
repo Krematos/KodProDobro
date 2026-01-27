@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 
 interface LoginPageProps {
-  onLogin: () => void;
+  onLoginSuccess: () => void;
   onNavigateToRegister: () => void;
+  onBack?: () => void;
 }
 
-const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onNavigateToRegister }) => {
-  const [email, setEmail] = useState('');
+const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onNavigateToRegister, onBack }) => {
+  const { login } = useAuth();
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -16,18 +19,15 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onNavigateToRegister }) 
     setIsLoading(true);
     setError(null);
 
-    // Simulate an API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // In a real app, you would validate credentials against a backend
-    if (email === 'user@impactlink.cz' && password === 'password123') {
-      console.log('Logging in with:', email);
-      onLogin();
-    } else {
-      setError('Neplatný email nebo heslo. Zkuste to prosím znovu.');
+    try {
+      await login({ username, password });
+      onLoginSuccess();
+    } catch (err: any) {
+      const errorMessage = err.message || 'Neplatné uživatelské jméno nebo heslo.';
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   return (
@@ -38,19 +38,30 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onNavigateToRegister }) 
           <p className="text-gray-600 mt-2">Propojujeme studenty s neziskovými organizacemi.</p>
         </div>
         <div className="bg-white p-8 rounded-xl shadow-lg">
+          {onBack && (
+            <button
+              onClick={onBack}
+              className="mb-4 flex items-center text-brand-blue hover:underline"
+            >
+              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Zpět
+            </button>
+          )}
           <h2 className="text-2xl font-bold text-brand-dark text-center mb-6">Přihlaste se ke svému účtu</h2>
           <form onSubmit={handleSubmit}>
             {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4" role="alert">{error}</div>}
             <div className="mb-4">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">Emailová adresa</label>
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">Uživatelské jméno</label>
               <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text"
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
                 className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-blue focus:border-transparent transition"
-                placeholder="jan@example.com"
+                placeholder="jana.novakova"
               />
             </div>
             <div className="mb-6">
@@ -73,7 +84,12 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onNavigateToRegister }) 
               disabled={isLoading}
               className="w-full bg-brand-blue text-white font-bold py-3 px-4 rounded-lg hover:bg-opacity-90 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex justify-center items-center"
             >
-              {isLoading ? 'Přihlašování...' : 'Přihlásit se'}
+              {isLoading ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                  Přihlašování...
+                </>
+              ) : 'Přihlásit se'}
             </button>
           </form>
           <p className="text-center text-sm text-gray-600 mt-6">
@@ -82,6 +98,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onNavigateToRegister }) 
               Zaregistrujte se
             </button>
           </p>
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg text-sm text-gray-700">
+            <p className="font-semibold mb-1">Pro testování:</p>
+            <p>Vytvořte si účet nebo použijte existujícíúživatele z backendu</p>
+          </div>
         </div>
       </div>
     </div>

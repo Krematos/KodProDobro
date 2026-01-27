@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Header from '../components/Header';
 import { getChatConversation, getChatMessages, chatService } from '../services/chatService';
-import type { ChatMessage, ChatConversation } from '../types';
-import { CURRENT_USER } from '../constants';
+import { getCurrentUser } from '../services/userService';
+import type { ChatMessage, ChatConversation, User } from '../types';
 
 interface ChatPageProps {
   chatId: string;
@@ -25,18 +25,31 @@ const ChatPage: React.FC<ChatPageProps> = ({ chatId, onBack }) => {
   const [conversation, setConversation] = useState<ChatConversation | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const chat = getChatConversation(chatId);
-    setConversation(chat);
+    const loadChatData = async () => {
+      try {
+        const user = await getCurrentUser();
+        setCurrentUser(user);
 
-    const initialMessages = getChatMessages(chatId);
-    setMessages(initialMessages);
+        const chat = await getChatConversation(chatId);
+        setConversation(chat);
+
+        // Pass user ID to correctly identify sender
+        const initialMessages = await getChatMessages(chatId, user.id);
+        setMessages(initialMessages);
+      } catch (error) {
+        console.error('Failed to load chat data:', error);
+      }
+    };
+
+    loadChatData();
 
     // Subscribe to new messages from the service
-    const handleNewMessage = (chatId: string, message: ChatMessage) => {
-      if (chatId === conversation?.id) {
+    const handleNewMessage = (receivedChatId: string, message: ChatMessage) => {
+      if (receivedChatId === chatId) {
         setMessages(prev => [...prev, message]);
       }
     };
@@ -47,7 +60,7 @@ const ChatPage: React.FC<ChatPageProps> = ({ chatId, onBack }) => {
     return () => {
       chatService.unsubscribe(handleNewMessage);
     };
-  }, [chatId, conversation?.id]);
+  }, [chatId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -55,14 +68,14 @@ const ChatPage: React.FC<ChatPageProps> = ({ chatId, onBack }) => {
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !conversation) return;
+    if (!newMessage.trim() || !conversation || !currentUser) return;
 
     const userMessage: ChatMessage = {
       id: Date.now(),
       sender: 'user',
       text: newMessage,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      avatar: CURRENT_USER.avatarUrl
+      avatar: currentUser.avatarUrl || '' // Use real user avatar if available
     };
 
     setMessages(prev => [...prev, userMessage]);

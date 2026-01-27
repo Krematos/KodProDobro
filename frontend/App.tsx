@@ -7,29 +7,32 @@ import ProfilePage from './pages/ProfilePage';
 import AIMatchPage from './pages/AIMatchPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import CreateProjectPage from './pages/CreateProjectPage';
 import { HomeIcon, AiSparklesIcon, ChatIcon, ProfileIcon } from './constants';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 
 // ... types remain the same
 type Page = 'home' | 'ai-match' | 'chat' | 'profile';
 type AuthPage = 'login' | 'register';
 
-const App: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+const AppContent: React.FC = () => {
+  const { isAuthenticated, isLoading } = useAuth();
   const [authPage, setAuthPage] = useState<AuthPage>('login');
+  const [showAuth, setShowAuth] = useState(false); // Pro zobrazení přihlášení z veřejné stránky
 
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
+  const [showCreateProject, setShowCreateProject] = useState(false);
 
-
-  const handleLogin = useCallback(() => {
-    setIsAuthenticated(true);
+  const handleLoginSuccess = useCallback(() => {
+    setShowAuth(false);
     setCurrentPage('home'); // Reset to home page on login
   }, []);
 
-  const handleLogout = useCallback(() => {
-    setIsAuthenticated(false);
-    setAuthPage('login'); // Go to login page on logout
+  const handleAuthCancel = useCallback(() => {
+    setShowAuth(false);
+    setCurrentPage('home');
   }, []);
 
   const navigateToProject = useCallback((projectId: string) => {
@@ -52,13 +55,47 @@ const App: React.FC = () => {
     setCurrentPage('chat');
   }, []);
 
+  const navigateToCreateProject = useCallback(() => {
+    if (!isAuthenticated) {
+      setShowAuth(true);
+      setAuthPage('login');
+      return;
+    }
+    setShowCreateProject(true);
+  }, [isAuthenticated]);
+
+  const navigateBackFromCreateProject = useCallback(() => {
+    setShowCreateProject(false);
+    setCurrentPage('home');
+  }, []);
+
+  // Pages that require authentication
+  const protectedPages: Page[] = ['ai-match', 'chat', 'profile'];
+
+  const requiresAuth = protectedPages.includes(currentPage);
+
+  const handlePageChange = (page: Page) => {
+    // Check if page requires authentication
+    if (protectedPages.includes(page) && !isAuthenticated) {
+      setShowAuth(true);
+      setAuthPage('login');
+      return;
+    }
+    setSelectedProjectId(null);
+    setSelectedChatId(null);
+    setCurrentPage(page);
+  };
+
   const renderContent = () => {
+    if (showCreateProject) {
+      return <CreateProjectPage onBack={navigateBackFromCreateProject} />;
+    }
     if (selectedProjectId) {
       return <ProjectDetailPage projectId={selectedProjectId} onBack={navigateBackHome} onChat={() => navigateToChat('chat1')} />;
     }
     switch (currentPage) {
       case 'home':
-        return <HomePage onProjectSelect={navigateToProject} />;
+        return <HomePage onProjectSelect={navigateToProject} onCreateProject={navigateToCreateProject} />;
       case 'ai-match':
         return <AIMatchPage onProjectSelect={navigateToProject} />;
       case 'chat':
@@ -67,7 +104,7 @@ const App: React.FC = () => {
         }
         return <ChatListPage onChatSelect={navigateToChat} />;
       case 'profile':
-        return <ProfilePage onLogout={handleLogout} />;
+        return <ProfilePage />;
       default:
         return <HomePage onProjectSelect={navigateToProject} />;
     }
@@ -80,11 +117,32 @@ const App: React.FC = () => {
     { page: 'profile' as Page, label: 'Profil', icon: ProfileIcon },
   ];
 
-  if (!isAuthenticated) {
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-brand-light flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-blue mx-auto"></div>
+          <p className="mt-4 text-brand-dark">Načítání...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show login/register if user is trying to access protected page OR clicked login button
+  if ((!isAuthenticated && requiresAuth) || showAuth) {
     if (authPage === 'login') {
-      return <LoginPage onLogin={handleLogin} onNavigateToRegister={() => setAuthPage('register')} />;
+      return <LoginPage
+        onLoginSuccess={handleLoginSuccess}
+        onNavigateToRegister={() => setAuthPage('register')}
+        onBack={!requiresAuth ? handleAuthCancel : undefined}
+      />;
     }
-    return <RegisterPage onRegister={handleLogin} onNavigateToLogin={() => setAuthPage('login')} />;
+    return <RegisterPage
+      onRegisterSuccess={handleLoginSuccess}
+      onNavigateToLogin={() => setAuthPage('login')}
+      onBack={!requiresAuth ? handleAuthCancel : undefined}
+    />;
   }
 
   return (
@@ -92,6 +150,17 @@ const App: React.FC = () => {
       <header className="bg-white shadow-md p-4 sticky top-0 z-10 md:hidden">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-brand-blue">ImpactLink <span className="text-brand-red">CZ</span></h1>
+          {!isAuthenticated && (
+            <button
+              onClick={() => {
+                setShowAuth(true);
+                setAuthPage('login');
+              }}
+              className="bg-brand-blue text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-opacity-90 transition-colors"
+            >
+              Přihlásit se
+            </button>
+          )}
         </div>
       </header>
 
@@ -106,11 +175,7 @@ const App: React.FC = () => {
           {navItems.map(item => (
             <button
               key={item.page}
-              onClick={() => {
-                setSelectedProjectId(null);
-                setSelectedChatId(null);
-                setCurrentPage(item.page)
-              }}
+              onClick={() => handlePageChange(item.page)}
               className={`flex flex-col items-center justify-center w-full text-sm transition-colors duration-200 ${currentPage === item.page && !selectedProjectId ? 'text-brand-blue' : 'text-gray-500 hover:text-brand-blue'}`}
             >
               {item.icon}
@@ -120,6 +185,14 @@ const App: React.FC = () => {
         </div>
       </nav>
     </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 };
 

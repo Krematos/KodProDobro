@@ -3,41 +3,41 @@ import { GoogleGenAI, Type } from "@google/genai";
 import type { Project } from "../types";
 
 // This is a placeholder for the actual API key which should be set in environment variables
-const API_KEY = process.env.API_KEY;
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 if (!API_KEY) {
   // In a real app, you'd handle this more gracefully, but for this example, we'll throw an error.
-  console.warn("API_KEY for Gemini is not set in environment variables. Using a mock response.");
+  console.warn("VITE_GEMINI_API_KEY is not set in environment variables. Using a mock response.");
 }
 
 const ai = API_KEY ? new GoogleGenAI({ apiKey: API_KEY }) : null;
 
 export interface AIProjectMatch {
-    projectId: string;
-    reasoning: string;
-    matchScore: number;
+  projectId: string;
+  reasoning: string;
+  matchScore: number;
 }
 
 const responseSchema = {
-    type: Type.ARRAY,
-    items: {
-      type: Type.OBJECT,
-      properties: {
-        projectId: {
-          type: Type.STRING,
-          description: "The unique ID of the matched project.",
-        },
-        reasoning: {
-          type: Type.STRING,
-          description: "A detailed explanation of why this project is an excellent match for the user, highlighting skill alignment and potential for growth.",
-        },
-        matchScore: {
-            type: Type.NUMBER,
-            description: "A score from 0 to 100 indicating the quality of the match."
-        }
+  type: Type.ARRAY,
+  items: {
+    type: Type.OBJECT,
+    properties: {
+      projectId: {
+        type: Type.STRING,
+        description: "The unique ID of the matched project.",
       },
-      required: ["projectId", "reasoning", "matchScore"],
+      reasoning: {
+        type: Type.STRING,
+        description: "A detailed explanation of why this project is an excellent match for the user, highlighting skill alignment and potential for growth.",
+      },
+      matchScore: {
+        type: Type.NUMBER,
+        description: "A score from 0 to 100 indicating the quality of the match."
+      }
     },
+    required: ["projectId", "reasoning", "matchScore"],
+  },
 };
 
 
@@ -50,16 +50,16 @@ export const findMatchingProjects = async (
     console.log("Using mock Gemini response.");
     await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
     return [
-        { projectId: 'p1', reasoning: "This project is a perfect match because you mentioned experience with mobile development and Firebase, which are the core technologies required. It also aligns with your interest in social impact apps.", matchScore: 95 },
-        { projectId: 'p2', reasoning: "Your skills in React and UI/UX design are highly relevant for this website revamp. This project would be a great way to apply your design skills to a high-impact platform.", matchScore: 85 }
+      { projectId: 'p1', reasoning: "This project is a perfect match because you mentioned experience with mobile development and Firebase, which are the core technologies required. It also aligns with your interest in social impact apps.", matchScore: 95 },
+      { projectId: 'p2', reasoning: "Your skills in React and UI/UX design are highly relevant for this website revamp. This project would be a great way to apply your design skills to a high-impact platform.", matchScore: 85 }
     ];
   }
 
   const projectSummaries = projects.map(p => ({
     id: p.id,
-    title: p.title,
-    summary: p.summary,
-    requiredSkills: p.requiredSkills,
+    title: p.name, // Backend uses 'name'
+    summary: p.description || p.summary || '',
+    requiredSkills: p.requiredSkills || [],
   }));
 
   const prompt = `

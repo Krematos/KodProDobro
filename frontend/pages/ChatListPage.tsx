@@ -39,8 +39,15 @@ const ChatListPage: React.FC<ChatListPageProps> = ({ onChatSelect }) => {
 
   useEffect(() => {
     // Fetch conversations from the service
-    const chats = getChatList();
-    setConversations(chats);
+    const loadChats = async () => {
+      try {
+        const chats = await getChatList();
+        setConversations(chats);
+      } catch (error) {
+        console.error("Failed to load chats:", error);
+      }
+    };
+    loadChats();
   }, []);
 
   return (
