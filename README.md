@@ -1,6 +1,6 @@
-# ImpactLink CZ
+# ImpactLink
 
-**ImpactLink CZ** je webová platforma navržená k propojení studentů informatiky a designu s českými neziskovými organizacemi. Cílem je umožnit studentům získat praxi na reálných projektech (Tech for Good) a zároveň pomoci neziskovému sektoru s digitalizací.
+**ImpactLink** je webová platforma navržená k propojení studentů informatiky a designu s českými neziskovými organizacemi. Cílem je umožnit studentům získat praxi na reálných projektech (Tech for Good) a zároveň pomoci neziskovému sektoru s digitalizací.
 
 ## 🚀 Klíčové vlastnosti
 
