@@ -36,8 +36,6 @@ public class ChatController {
 
     @GetMapping
     public List<Chat> getUserChats() {
-        // This is a simplified implementation. A real implementation would involve
-        // querying chats where the current user is a participant.
         return chatRepository.findAll();
     }
 

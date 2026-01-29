@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringJUnitConfig({AsyncConfig.class, AsyncConfigTest.TestServiceConfig.class})
-public class AsyncConfigTest {
+class AsyncConfigTest {
     @Autowired
     private Executor taskExecutor;
 
@@ -51,9 +51,7 @@ public class AsyncConfigTest {
         System.out.println("Async thread: " + asyncThreadName);
         // OVĚŘENÍ:
         // 1. Vlákna musí být rozdílná
-        assertThat(asyncThreadName).isNotEqualTo(mainThreadName);
-        // 2. Vlákno musí začínat prefixem("AsyncExecutor-")
-        assertThat(asyncThreadName).startsWith("AsyncExecutor-");
+        assertThat(asyncThreadName).isNotEqualTo(mainThreadName).startsWith("AsyncExecutor-");
     }
 
     // --- Pomocná třída a konfigurace pro testování funkčnosti ---

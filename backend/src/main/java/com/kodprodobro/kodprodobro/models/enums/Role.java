@@ -16,6 +16,15 @@ import static com.kodprodobro.kodprodobro.models.enums.Permission.*;
 public enum Role {
 
     USER(Collections.emptySet()),
+    STUDENT(Collections.emptySet()),
+
+    TEACHER(Set.of(
+            TEAM_CREATE,
+            TEAM_MANAGE_STUDENTS,
+            USER_READ,
+            USER_UPDATE
+        )
+    ),
     ADMIN(Set.of(
             ADMIN_READ,
             ADMIN_UPDATE,
@@ -25,7 +34,10 @@ public enum Role {
             USER_UPDATE
         )
     ),
-    MANAGER(Set.of(
+    NONPROFIT(Set.of(
+            PROJECT_CREATE,
+            PROJECT_UPDATE,
+            PROJECT_DELETE,
             USER_READ,
             USER_UPDATE
         )
@@ -42,10 +54,7 @@ public enum Role {
                 .stream()
                 .map(permission -> new SimpleGrantedAuthority(permission.getPermission()))
                 .collect(Collectors.toList());
-
-        // Přidá i samotnou roli (aby fungovalo i staré hasRole('ADMIN'))
         authorities.add(new SimpleGrantedAuthority("ROLE_" + this.name()));
-
         return authorities;
     }
 }

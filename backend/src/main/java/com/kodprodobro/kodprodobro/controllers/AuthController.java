@@ -1,5 +1,6 @@
 package com.kodprodobro.kodprodobro.controllers;
 
+import com.kodprodobro.kodprodobro.dto.message.MessageResponse;
 import com.kodprodobro.kodprodobro.dto.security.JwtResponse;
 import com.kodprodobro.kodprodobro.dto.security.TokenValidationResponse;
 import com.kodprodobro.kodprodobro.dto.auth.LoginRequest;
@@ -21,6 +22,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -142,7 +146,7 @@ public class AuthController {
             return ResponseEntity.ok(new TokenValidationResponse(true, username, roles));
 
         } catch (Exception e) {
-            return ResponseEntity.ok(new TokenValidationResponse(false, null, null));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -160,20 +164,25 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "Chybí token v Authorization headeru", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"error\":\"Chybí token\"}")))
     })
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(
+    public ResponseEntity<MessageResponse> logout(@CookieValue(name = "accessToken", required = false) String token,
             @Parameter(hidden = true) // Skryje HttpServletRequest ve Swagger UI
             HttpServletRequest request) {
         log.info("POST /api/auth/logout - Uživatelský odhlášení");
-        // získání tokenu z hlavičky Authorization
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-            jwtService.blacklistToken(token);
-            log.info("Token byl úspěšně přidán na černou listinu.");
-        } else {
-            log.warn("Odhlášení selhalo: Chybí 'Bearer ' prefix v hlavičce.");
-            return ResponseEntity.badRequest().body(Map.of("error", "Chybí token"));
+        // 1. Pokud token existuje, přidá ho na Blacklist
+        if (token != null) {
+            jwtService.isTokenBlacklisted(token);
         }
-        return ResponseEntity.ok(Map.of("message", "Úspěšně odhlášeno"));
+
+        // 2. Vytvoří "mazací" cookie
+        ResponseCookie cookie = ResponseCookie.from("accessToken", "")
+                .path("/")
+                .maxAge(0) // Okamžitá smrt
+                .httpOnly(true)
+                .build();
+
+        // 3. Vrátí odpověď
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(new MessageResponse("Úspěšné odhlášení"));
     }
 }

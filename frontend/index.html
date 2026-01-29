@@ -1,28 +1,15 @@
-
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <title>ImpactLink CZ</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              'brand-blue': '#00529B',
-              'brand-red': '#D80027',
-              'brand-light': '#F0F4F8',
-              'brand-dark': '#2C3E50',
-              'accent-teal': '#1ABC9C',
-              'accent-yellow': '#F1C40F',
-            },
-          },
-        },
-      }
-    </script>
+<html lang="cs">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <title>ImpactLink CZ</title>
+
+  <!-- Preconnect to Google Fonts for better performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <script type="importmap">
 {
   "imports": {
@@ -34,8 +21,10 @@
 }
 </script>
 </head>
-  <body class="bg-brand-light">
-    <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-  </body>
+
+<body class="bg-brand-light">
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+
 </html>
