@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { ArrowLeft } from 'lucide-react';
 
-interface RegisterPageProps {
-  onRegisterSuccess: () => void;
-  onNavigateToLogin: () => void;
-  onBack?: () => void;
-}
-
-const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onNavigateToLogin, onBack }) => {
+const RegisterPage: React.FC = () => {
+  const navigate = useNavigate();
   const { register } = useAuth();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -44,7 +41,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onNaviga
         password,
         roles: ['STUDENT'], // Default role
       });
-      onRegisterSuccess();
+      navigate('/');
     } catch (err: any) {
       const errorMessage = err.message || 'Registrace selhala. Zkuste to prosím znovu.';
       setError(errorMessage);
@@ -57,21 +54,19 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onNaviga
     <div className="min-h-screen bg-brand-light flex flex-col justify-center items-center p-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-brand-blue">ImpactLink <span className="text-brand-red">CZ</span></h1>
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <button
+              onClick={() => navigate('/')}
+              className="text-gray-600 hover:text-brand-blue transition-colors p-2 hover:bg-white/50 rounded-lg"
+              aria-label="Zpět na domovskou stránku"
+            >
+              <ArrowLeft className="w-6 h-6" />
+            </button>
+            <h1 className="text-4xl font-bold text-brand-blue">ImpactLink <span className="text-brand-red">CZ</span></h1>
+          </div>
           <p className="text-gray-600 mt-2">Vytvořte si účet a začněte.</p>
         </div>
         <div className="bg-white p-8 rounded-xl shadow-lg">
-          {onBack && (
-            <button
-              onClick={onBack}
-              className="mb-4 flex items-center text-brand-blue hover:underline"
-            >
-              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Zpět
-            </button>
-          )}
           <h2 className="text-2xl font-bold text-brand-dark text-center mb-6">Vytvořte si účet</h2>
           <form onSubmit={handleSubmit}>
             {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4" role="alert">{error}</div>}
@@ -144,7 +139,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onNaviga
           </form>
           <p className="text-center text-sm text-gray-600 mt-6">
             Máte již účet?{' '}
-            <button onClick={onNavigateToLogin} className="font-medium text-brand-blue hover:underline">
+            <button onClick={() => navigate('/login')} className="font-medium text-brand-blue hover:underline">
               Přihlaste se
             </button>
           </p>

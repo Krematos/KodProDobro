@@ -5,7 +5,7 @@ import com.kodprodobro.kodprodobro.dto.security.JwtResponse;
 import com.kodprodobro.kodprodobro.dto.security.TokenValidationResponse;
 import com.kodprodobro.kodprodobro.dto.auth.LoginRequest;
 import com.kodprodobro.kodprodobro.dto.auth.RegisterRequest;
-import com.kodprodobro.kodprodobro.models.User;
+import com.kodprodobro.kodprodobro.models.user.User;
 import com.kodprodobro.kodprodobro.services.JwtService;
 import com.kodprodobro.kodprodobro.services.user.UserDetailsImpl;
 import com.kodprodobro.kodprodobro.services.user.UserService;

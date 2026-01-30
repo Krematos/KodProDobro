@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button, Input } from '../src/components/ui';
+import { ArrowLeft } from 'lucide-react';
 
-interface LoginPageProps {
-  onLoginSuccess: () => void;
-  onNavigateToRegister: () => void;
-  onBack?: () => void;
-}
-
-const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onNavigateToRegister, onBack }) => {
+const LoginPage: React.FC = () => {
+  const navigate = useNavigate();
   const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -22,7 +19,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onNavigateToRegis
 
     try {
       await login({ username, password });
-      onLoginSuccess();
+      navigate('/');
     } catch (err: any) {
       const errorMessage = err.message || 'Neplatné uživatelské jméno nebo heslo.';
       setError(errorMessage);
@@ -35,23 +32,19 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onNavigateToRegis
     <div className="min-h-screen bg-brand-light flex flex-col justify-center items-center p-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-brand-blue">ImpactLink <span className="text-brand-red">CZ</span></h1>
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <button
+              onClick={() => navigate('/')}
+              className="text-gray-600 hover:text-brand-blue transition-colors p-2 hover:bg-white/50 rounded-lg"
+              aria-label="Zpět na domovskou stránku"
+            >
+              <ArrowLeft className="w-6 h-6" />
+            </button>
+            <h1 className="text-4xl font-bold text-brand-blue">ImpactLink <span className="text-brand-red">CZ</span></h1>
+          </div>
           <p className="text-gray-600 mt-2">Propojujeme studenty s neziskovými organizacemi.</p>
         </div>
         <div className="bg-white p-8 rounded-xl shadow-lg">
-          {onBack && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onBack}
-              className="mb-4"
-            >
-              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Zpět
-            </Button>
-          )}
           <h2 className="text-2xl font-bold text-brand-dark text-center mb-6">Přihlaste se ke svému účtu</h2>
           <form onSubmit={handleSubmit}>
             {error && (
@@ -74,7 +67,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onNavigateToRegis
             <div className="mb-6">
               <div className="flex justify-between items-center mb-1">
                 <label className="block text-sm font-medium text-gray-700">Heslo</label>
-                <a href="#" className="text-sm text-brand-blue hover:underline">Zapomněli jste heslo?</a>
+                <button
+                  type="button"
+                  onClick={() => navigate('/forgot-password')}
+                  className="text-sm text-brand-blue hover:underline"
+                >
+                  Zapomněli jste heslo?
+                </button>
               </div>
               <Input
                 type="password"
@@ -99,7 +98,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onNavigateToRegis
           </form>
           <p className="text-center text-sm text-gray-600 mt-6">
             Nemáte účet?{' '}
-            <button onClick={onNavigateToRegister} className="font-medium text-brand-blue hover:underline">
+            <button onClick={() => navigate('/register')} className="font-medium text-brand-blue hover:underline">
               Zaregistrujte se
             </button>
           </p>

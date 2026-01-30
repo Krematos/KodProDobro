@@ -43,8 +43,8 @@ class SecurityIntegrationTest {
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}")) // Posílá prázdné tělo
-                .andExpect(status().is4xxClientError()) // Čeká 400 Bad Request (validace), ale NE 401/403
-                .andExpect(status().is(400)); // Konkrétně 400, ne 403 Forbidden
+                .andExpect(status().is4xxClientError()) // Čeká 400 Bad Request
+                .andExpect(status().is(400));
     }
     // --- 2. TESTY CHRÁNĚNÝCH ENDPOINTŮ (PROTECTED) ---
     @Test

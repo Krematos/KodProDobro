@@ -2,7 +2,7 @@ package com.kodprodobro.kodprodobro.mapper;
 
 import com.kodprodobro.kodprodobro.dto.user.UserRegistrationRequest;
 import com.kodprodobro.kodprodobro.dto.user.UserResponse;
-import com.kodprodobro.kodprodobro.models.User;
+import com.kodprodobro.kodprodobro.models.user.User;
 import com.kodprodobro.kodprodobro.models.enums.Role;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,19 +14,9 @@ import java.util.Set;
 public interface UserMapper {
     // 1. Základní mapování entity na DTO
     UserResponse toDto(User user);
-    /*
-    // 2. Mapování seznamů
-    List<UserResponse> toDtoList(List<User> users);
-    /*
-    // 3. Pokročilejší mapování
-    @Mapping(target = "fullName", expression = "java(user.getFirstName() + ' ' + user.getLastName())")
-    @Mapping(target = "active", source = "enabled") // V DB je 'enabled', v DTO chcete 'active'
-    @Mapping(target = "roleNames", source = "roles", qualifiedByName = "rolesToStrings")
-    UserResponse toDetailedDto(User user);
-    */
-    // Inverzní mapování (např. při registraci)
-    @Mapping(target = "id", ignore = true) // ID generuje databáze, ignoruje ho
-    @Mapping(target = "roles", ignore = true) // Role nastavuje v servise, ne z JSONu
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "roles", ignore = true)
     User toEntity(UserRegistrationRequest request);
 
     @Named("rolesToStrings")

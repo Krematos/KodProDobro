@@ -1,6 +1,6 @@
-package com.kodprodobro.kodprodobro.repositories;
+package com.kodprodobro.kodprodobro.repositories.password;
 
-import com.kodprodobro.kodprodobro.models.User;
+import com.kodprodobro.kodprodobro.models.user.User;
 import com.kodprodobro.kodprodobro.models.token.PasswordResetToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 

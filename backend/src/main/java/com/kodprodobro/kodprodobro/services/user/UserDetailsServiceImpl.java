@@ -1,8 +1,8 @@
 package com.kodprodobro.kodprodobro.services.user;
 
 
-import com.kodprodobro.kodprodobro.models.User;
-import com.kodprodobro.kodprodobro.repositories.UserRepository;
+import com.kodprodobro.kodprodobro.models.user.User;
+import com.kodprodobro.kodprodobro.repositories.user.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

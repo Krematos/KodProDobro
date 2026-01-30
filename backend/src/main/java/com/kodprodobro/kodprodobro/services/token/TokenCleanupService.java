@@ -1,6 +1,6 @@
-package com.kodprodobro.kodprodobro.services;
+package com.kodprodobro.kodprodobro.services.token;
 
-import com.kodprodobro.kodprodobro.repositories.PasswordResetRepository;
+import com.kodprodobro.kodprodobro.repositories.password.PasswordResetRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;

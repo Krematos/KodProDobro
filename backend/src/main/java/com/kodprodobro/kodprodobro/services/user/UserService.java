@@ -3,13 +3,12 @@ package com.kodprodobro.kodprodobro.services.user;
 
 import com.kodprodobro.kodprodobro.dto.user.UserUpdateResponse;
 import com.kodprodobro.kodprodobro.models.enums.Role;
-import com.kodprodobro.kodprodobro.repositories.UserRepository;
+import com.kodprodobro.kodprodobro.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import com.kodprodobro.kodprodobro.models.User;
+import com.kodprodobro.kodprodobro.models.user.User;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;

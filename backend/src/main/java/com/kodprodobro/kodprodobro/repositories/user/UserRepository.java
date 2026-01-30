@@ -1,6 +1,6 @@
-package com.kodprodobro.kodprodobro.repositories;
+package com.kodprodobro.kodprodobro.repositories.user;
 
-import com.kodprodobro.kodprodobro.models.User;
+import com.kodprodobro.kodprodobro.models.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

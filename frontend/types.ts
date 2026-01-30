@@ -81,3 +81,13 @@ export interface AIBadge {
   // Progress function to calculate completion towards earning the badge
   progress: (user: User) => { current: number; target: number };
 }
+
+// Password Reset Types
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+}

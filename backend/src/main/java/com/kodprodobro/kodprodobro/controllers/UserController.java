@@ -1,11 +1,9 @@
 package com.kodprodobro.kodprodobro.controllers;
 
-import com.kodprodobro.kodprodobro.dto.user.UserProfileRequest;
 import com.kodprodobro.kodprodobro.dto.user.UserResponse;
 import com.kodprodobro.kodprodobro.dto.user.UserUpdateResponse;
 import com.kodprodobro.kodprodobro.mapper.UserMapper;
-import com.kodprodobro.kodprodobro.models.User;
-import com.kodprodobro.kodprodobro.repositories.UserRepository;
+import com.kodprodobro.kodprodobro.models.user.User;
 import com.kodprodobro.kodprodobro.services.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,15 +11,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 

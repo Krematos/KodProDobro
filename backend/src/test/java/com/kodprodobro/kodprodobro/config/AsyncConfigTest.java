@@ -31,7 +31,7 @@ class AsyncConfigTest {
 
         ThreadPoolTaskExecutor executor = (ThreadPoolTaskExecutor) taskExecutor;
 
-        // Ověří parametry, které jsi nastavil v configu
+        // Ověří parametry
         assertEquals(4, executor.getCorePoolSize());
         assertEquals(8, executor.getMaxPoolSize());
         assertEquals(25, executor.getQueueCapacity());
@@ -49,7 +49,6 @@ class AsyncConfigTest {
         String asyncThreadName = future.get();
         System.out.println("Main thread: " + mainThreadName);
         System.out.println("Async thread: " + asyncThreadName);
-        // OVĚŘENÍ:
         // 1. Vlákna musí být rozdílná
         assertThat(asyncThreadName).isNotEqualTo(mainThreadName).startsWith("AsyncExecutor-");
     }

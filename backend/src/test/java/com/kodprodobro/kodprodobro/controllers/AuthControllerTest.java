@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kodprodobro.kodprodobro.config.SecurityConfig;
 import com.kodprodobro.kodprodobro.dto.auth.LoginRequest;
 import com.kodprodobro.kodprodobro.dto.auth.RegisterRequest;
-import com.kodprodobro.kodprodobro.models.User;
+import com.kodprodobro.kodprodobro.models.user.User;
 import com.kodprodobro.kodprodobro.models.enums.Role;
 import com.kodprodobro.kodprodobro.services.JwtService;
 import com.kodprodobro.kodprodobro.services.email.EmailService;

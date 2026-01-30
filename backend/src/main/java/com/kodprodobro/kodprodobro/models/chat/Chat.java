@@ -1,6 +1,6 @@
 package com.kodprodobro.kodprodobro.models.chat;
 
-import com.kodprodobro.kodprodobro.models.User;
+import com.kodprodobro.kodprodobro.models.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 

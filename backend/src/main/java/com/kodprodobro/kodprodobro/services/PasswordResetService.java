@@ -1,10 +1,10 @@
 package com.kodprodobro.kodprodobro.services;
 
 import com.kodprodobro.kodprodobro.exception.token.TokenExpiredException;
-import com.kodprodobro.kodprodobro.models.User;
+import com.kodprodobro.kodprodobro.models.user.User;
 import com.kodprodobro.kodprodobro.models.token.PasswordResetToken;
-import com.kodprodobro.kodprodobro.repositories.PasswordResetRepository;
-import com.kodprodobro.kodprodobro.repositories.UserRepository;
+import com.kodprodobro.kodprodobro.repositories.password.PasswordResetRepository;
+import com.kodprodobro.kodprodobro.repositories.user.UserRepository;
 import com.kodprodobro.kodprodobro.services.email.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

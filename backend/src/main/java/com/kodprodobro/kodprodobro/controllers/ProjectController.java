@@ -1,81 +1,146 @@
 package com.kodprodobro.kodprodobro.controllers;
 
-import com.kodprodobro.kodprodobro.dto.project.ProjectRequest;
-import com.kodprodobro.kodprodobro.models.Project;
-import com.kodprodobro.kodprodobro.models.User;
-import com.kodprodobro.kodprodobro.repositories.ProjectRepository;
-import com.kodprodobro.kodprodobro.repositories.UserRepository;
+import com.kodprodobro.kodprodobro.dto.message.MessageResponse;
+import com.kodprodobro.kodprodobro.dto.project.ProjectResponse;
+import com.kodprodobro.kodprodobro.dto.project.UpdateProjectRequest;
+import com.kodprodobro.kodprodobro.models.project.CreateProjectRequest;
+import com.kodprodobro.kodprodobro.repositories.project.ProjectRepository;
+import com.kodprodobro.kodprodobro.services.project.ProjectService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/projects")
 @RequiredArgsConstructor
+@Tag(name = "Projects", description = "Endpointy pro správu projektů")
 public class ProjectController {
 
-    @Autowired
-    private ProjectRepository projectRepository;
+    private final ProjectRepository projectRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final ProjectService projectService;
 
+    /**
+     * Získání všech projektů.
+     * @return
+     */
+    @Operation(summary = "Získání všech veřejných projektů", description = "Vrátí seznam všech projektů, které jsou ve stavu PUBLISHED.")
     @GetMapping
-    public List<Project> getAllProjects() {
-        return projectRepository.findAll();
-    }
-    /*
-    @PostMapping
-    @PreAuthorize("hasRole('NONPROFIT')")
-    public ResponseEntity<Project> createProject(@Valid @RequestBody ProjectRequest projectRequest) {
-        log.info("POST /api/projects - Vytvoření nového projektu: {}", projectRequest.getName());
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-
-        User owner = userRepository.findByUsername(currentPrincipalName)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Project project = new Project();
-        project.setName(projectRequest.getName());
-        project.setDescription(projectRequest.getDescription());
-        project.setOwner(owner);
-
-        Project savedProject = projectRepository.save(project);
-        return ResponseEntity.ok(savedProject);
+    public ResponseEntity<List<ProjectResponse>> getAllProjects() {
+        List<ProjectResponse> projects = projectService.getAllPublishedProjects();
+        return ResponseEntity.ok(projects);
     }
 
-    @GetMapping("/{projectId}")
-    public ResponseEntity<Project> getProjectById(@PathVariable Long projectId) {
-        log.info("GET /api/projects/{} - Získání projektu podle ID", projectId);
-        Optional<Project> project = projectRepository.findById(projectId);
-        return project.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    /**
+     * Detail projektu podle ID.
+     */
+    @Operation(summary = "Detail projektu", description = "Vrátí detailní informace o projektu podle ID.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Projekt nalezen"),
+            @ApiResponse(responseCode = "404", description = "Projekt neexistuje", content = @Content)
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<ProjectResponse> getProjectById(@PathVariable Long id) {
+        ProjectResponse project = projectService.getPublishedProjectById(id);
+        return ResponseEntity.ok(project);
     }
 
-    @PutMapping("/{projectId}")
-    @PreAuthorize("hasRole('NONPROFIT')")
-    public ResponseEntity<Project> updateProject(@Valid @PathVariable Long projectId, @RequestBody ProjectRequest projectRequest) {
-        log.info("PUT /api/projects/{} - Aktualizace projektu: {}", projectId, projectRequest.getName());
-        Optional<Project> projectOptional = projectRepository.findById(projectId);
-        if (projectOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
+    /**
+     * Vyhledání projektů podle názvu.
+     */
+    @Operation(summary = "Vyhledávání projektů", description = "Hledá projekty podle názvu (case-insensitive).")
+    @GetMapping("/search")
+    public ResponseEntity<List<ProjectResponse>> searchProjectsByTitle(@RequestParam String title) {
+        List<ProjectResponse> projects = projectService.searchPublishedProjectsByTitle(title);
+        return ResponseEntity.ok(projects);
+    }
 
-        Project project = projectOptional.get();
-        project.setName(projectRequest.getName());
-        project.setDescription(projectRequest.getDescription());
+    /**
+     * Filtrování projektů podle technologie.
+     */
+    @Operation(summary = "Filtrování projektů podle technologie", description = "Vrátí projekty, které používají zadanou technologii.")
+    @GetMapping("/filter")
+    public ResponseEntity<List<ProjectResponse>> filterProjectsByTechnology(@RequestParam String technology) {
+        List<ProjectResponse> projects = projectService.filterPublishedProjectsByTechnology(technology);
+        return ResponseEntity.ok(projects);
+    }
 
-        Project updatedProject = projectRepository.save(project);
+    /**
+     * Získání nejnovějších projektů.
+     */
+    @Operation(summary = "Získání nejnovějších projektů", description = "Vrátí seznam nejnovějších publikovaných projektů.")
+    @GetMapping("/latest")
+    public ResponseEntity<List<ProjectResponse>> getLatestProjects() {
+        List<ProjectResponse> projects = projectService.getLatestPublishedProjects();
+        return ResponseEntity.ok(projects);
+    }
+
+    /**
+     * Vytvoření nového projektu.
+     */
+    @Operation(summary = "Vytvoření nového projektu", description = "Vytvoří nový projekt s poskytnutými údaji.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Projekt úspěšně vytvořen"),
+            @ApiResponse(responseCode = "400", description = "Neplatná data"),
+            @ApiResponse(responseCode = "401", description = "Nepřihlášený uživatel")
+    })
+    @PostMapping("/create")
+    @PreAuthorize("hasAuthority('project:create')")
+    public ResponseEntity<ProjectResponse> createProject(@Valid @RequestBody CreateProjectRequest request, Authentication authentication) {
+        String currentUsername = authentication.getName();
+        ProjectResponse createdProject = projectService.createProject(request, currentUsername);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdProject);
+    }
+
+    /**
+     * Aktualizace existujícího projektu.
+     */
+    @Operation(summary = "Aktualizace projektu", description = "Aktualizuje údaje existujícího projektu podle ID.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Projekt aktualizován"),
+            @ApiResponse(responseCode = "403", description = "Nemáte oprávnění upravovat tento projekt"),
+            @ApiResponse(responseCode = "404", description = "Projekt nenalezen")
+    })
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('project:update')")
+    public ResponseEntity<ProjectResponse> updateProject(@PathVariable Long id,
+                                                         @Valid @RequestBody UpdateProjectRequest request, Authentication authentication) {
+        String currentUsername = authentication.getName();
+        ProjectResponse updatedProject = projectService.updateProject(id, request, currentUsername);
         return ResponseEntity.ok(updatedProject);
-    }*/
+    }
+
+    /**
+     * Smazání projektu.
+     */
+    @Operation(summary = "Smazání projektu", description = "Smaže existující projekt podle ID.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Projekt smazán"),
+            @ApiResponse(responseCode = "403", description = "Nemáte oprávnění smazat tento projekt")
+    })
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('project:delete')")
+    public ResponseEntity<MessageResponse> deleteProject(@PathVariable Long id, Authentication authentication) {
+        String currentUsername = authentication.getName();
+        projectService.deleteProject(id, currentUsername);
+        return ResponseEntity.noContent().build();
+    }
+
+
+
+
+
 }

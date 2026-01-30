@@ -1,4 +1,4 @@
-package com.kodprodobro.kodprodobro.models;
+package com.kodprodobro.kodprodobro.models.user;
 
 import com.kodprodobro.kodprodobro.models.enums.Role;
 import jakarta.persistence.*;
@@ -9,10 +9,8 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.proxy.HibernateProxy;
-import org.springframework.security.core.GrantedAuthority;
 
 import java.time.Instant;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
