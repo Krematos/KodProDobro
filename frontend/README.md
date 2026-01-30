@@ -424,12 +424,6 @@ npx tsc --noEmit
 
 ---
 
-## 👨‍💻 Development
 
-Vytvořeno jako školní projekt pro předmět **IT kurz** na VŠE.
 
-**Tech Stack**: React + TypeScript + Vite + Tailwind + TanStack Query
 
----
-
-**Happy Coding! 🚀**
