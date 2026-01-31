@@ -102,7 +102,7 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Email již existuje"));
+                .andExpect(jsonPath("$.message").value("Email již existuje"));
     }
 
     @Test
@@ -160,10 +160,7 @@ class AuthControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest()) // 400
                 // Ověří, že GlobalExceptionHandler vrátil mapu chyb
-                .andExpect(jsonPath("$.username").exists())
-                .andExpect(jsonPath("$.email").exists())
-                .andExpect(jsonPath("$.password").exists());
-
+                .andExpect(jsonPath("$.message").value("Neplatná vstupní data. {password=Heslo musí mít alespoň 8 znaků, email=Email musí být platný, username=Jméno musí mít 3-30 znaků}"));
         // Service se nesmí zavolat, validace to stopne dřív
         verify(userService, times(0)).registerNewUser(any(User.class));
     }
@@ -187,6 +184,6 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isBadRequest()) // GlobalHandler mapuje IllegalArgument -> 400
-                .andExpect(jsonPath("$.error").value("Email již existuje"));
+                .andExpect(jsonPath("$.message").value("Email již existuje"));
     }
 }

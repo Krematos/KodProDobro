@@ -42,7 +42,7 @@ public class UserController {
         log.info("GET /api/user - Získání seznamu všech uživatelů");
         return userService.findAllUsers().stream()
                 .map(userMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -99,7 +99,7 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
         log.info("DELETE /api/user/{} - Požadavek na smazání uživatele", userId);
         if (userService.findUserById(userId).isPresent()) {
-            userService.DeleteUserById(userId);
+            userService.deleteUserById(userId);
             log.info("Uživatel s ID {} byl úspěšně smazán.", userId);
             return ResponseEntity.noContent().build(); // 204 No Content
         }

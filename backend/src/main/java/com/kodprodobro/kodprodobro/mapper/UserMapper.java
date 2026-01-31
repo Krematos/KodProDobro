@@ -1,6 +1,6 @@
 package com.kodprodobro.kodprodobro.mapper;
 
-import com.kodprodobro.kodprodobro.dto.user.UserRegistrationRequest;
+import com.kodprodobro.kodprodobro.dto.auth.RegisterRequest;
 import com.kodprodobro.kodprodobro.dto.user.UserResponse;
 import com.kodprodobro.kodprodobro.models.user.User;
 import com.kodprodobro.kodprodobro.models.enums.Role;
@@ -17,7 +17,7 @@ public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "roles", ignore = true)
-    User toEntity(UserRegistrationRequest request);
+    User toEntity(RegisterRequest request);
 
     @Named("rolesToStrings")
     static Set<String> rolesToStrings(Set<Role> roles) {

@@ -1,4 +1,4 @@
-package com.kodprodobro.kodprodobro.dto.resetPassword;
+package com.kodprodobro.kodprodobro.dto.resetpassword;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

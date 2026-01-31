@@ -2,8 +2,8 @@ package com.kodprodobro.kodprodobro.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kodprodobro.kodprodobro.config.SecurityConfig;
-import com.kodprodobro.kodprodobro.dto.resetPassword.ForgotPasswordRequest;
-import com.kodprodobro.kodprodobro.dto.resetPassword.ResetPasswordRequest;
+import com.kodprodobro.kodprodobro.dto.resetpassword.ForgotPasswordRequest;
+import com.kodprodobro.kodprodobro.dto.resetpassword.ResetPasswordRequest;
 import com.kodprodobro.kodprodobro.services.JwtService;
 import com.kodprodobro.kodprodobro.services.PasswordResetService;
 import com.kodprodobro.kodprodobro.services.user.UserDetailsServiceImpl;
@@ -170,7 +170,7 @@ class PasswordResetControllerTest {
                         .content(objectMapper.writeValueAsString(validResetPasswordRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Neplatný token"));
+                .andExpect(jsonPath("$.message").value("Neplatný token"));
 
         verify(passwordResetService, times(1)).resetPassword(anyString(), anyString());
     }
@@ -188,7 +188,7 @@ class PasswordResetControllerTest {
                         .content(objectMapper.writeValueAsString(validResetPasswordRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Token vypršel"));
+                .andExpect(jsonPath("$.message").value("Token vypršel"));
 
         verify(passwordResetService, times(1)).resetPassword(anyString(), anyString());
     }

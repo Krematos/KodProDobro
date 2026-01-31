@@ -35,7 +35,7 @@ public class User {
 
     @NotBlank(message = "Heslo je povinné")
     @Column(nullable = false)
-    @Size(min = 8, max = 150)
+    @Size(min = 8, max = 100)
     private String password;
 
     @NotBlank(message = "Email je povinný")

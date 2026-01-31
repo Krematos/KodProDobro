@@ -119,11 +119,11 @@ public class UserService {
      *                                  existuje.
      */
     private void validateUser(User user) {
-        if (userRepository.existsByUsername(user.getUsername())) {
+        if (Boolean.TRUE.equals(userRepository.existsByUsername(user.getUsername()))) {
             log.warn("Registrace selhala - jméno {} již existuje", user.getUsername());
             throw new IllegalArgumentException("Uživatelské jméno již existuje");
         }
-        if (userRepository.existsByEmail(user.getEmail())) {
+        if (Boolean.TRUE.equals(userRepository.existsByEmail(user.getEmail()))) {
             log.warn("Registrace selhala - email {} již existuje", user.getEmail());
             throw new IllegalArgumentException("Email již existuje");
         }
@@ -132,7 +132,7 @@ public class UserService {
     // getters, setters, další metody...
     @Transactional
     @CacheEvict(value = { "users", "usersById", "allUsers" }, allEntries = true)
-    public void DeleteUserById(Long userId) {
+    public void deleteUserById(Long userId) {
         userRepository.deleteById(userId);
     }
 

@@ -2,8 +2,8 @@ package com.kodprodobro.kodprodobro.controllers;
 
 import com.kodprodobro.kodprodobro.dto.message.MessageResponse;
 import com.kodprodobro.kodprodobro.services.PasswordResetService;
-import com.kodprodobro.kodprodobro.dto.resetPassword.ForgotPasswordRequest;
-import com.kodprodobro.kodprodobro.dto.resetPassword.ResetPasswordRequest;
+import com.kodprodobro.kodprodobro.dto.resetpassword.ForgotPasswordRequest;
+import com.kodprodobro.kodprodobro.dto.resetpassword.ResetPasswordRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 /**
  * Controller pro správu obnovení hesla.

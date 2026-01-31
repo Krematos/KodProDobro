@@ -1,8 +1,11 @@
 package com.kodprodobro.kodprodobro.dto.user;
 
-public record UserRegistrationRequest(
+import java.util.Set;
+
+public record UserInfoResponse(
+        Long id,
         String username,
         String email,
-        String password
+        Set<String> roles
 ) {
 }

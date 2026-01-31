@@ -25,7 +25,7 @@ class SecurityIntegrationTest {
     @Test
     @DisplayName("Veřejný endpoint /api/products by měl být dostupný bez přihlášení (200 OK)")
     void shouldAllowAccessToPublicEndpoint() throws Exception {
-        mockMvc.perform(get("/api/products"))
+        mockMvc.perform(get("/api/projects"))
                 .andExpect(status().isOk());
     }
 

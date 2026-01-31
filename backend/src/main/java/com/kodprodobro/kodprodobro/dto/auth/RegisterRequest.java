@@ -8,8 +8,8 @@ public record RegisterRequest(
         @NotBlank
         @Size(min = 3, max = 30, message = "Jméno musí mít 3-30 znaků")
         String username,
-        @NotBlank @Email
+        @NotBlank @Email(message = "Email musí být platný")
         String email,
-        @NotBlank @Size(min= 8)
+        @NotBlank @Size(min= 8, max = 100, message = "Heslo musí mít alespoň 8 znaků")
         String password) {
 }

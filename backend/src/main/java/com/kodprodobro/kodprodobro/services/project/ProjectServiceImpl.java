@@ -34,7 +34,7 @@ public class ProjectServiceImpl implements ProjectService {
     public List<ProjectResponse> getAllPublishedProjects() {
         return projectRepository.findByPublishedTrue().stream()
                 .map(projectMapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -68,7 +68,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
                 .limit(10)
                 .map(projectMapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -80,7 +80,7 @@ public class ProjectServiceImpl implements ProjectService {
     public List<ProjectResponse> searchPublishedProjectsByTitle(String title) {
         return projectRepository.findByTitleContainingIgnoreCaseAndPublishedTrue(title).stream()
                 .map(projectMapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

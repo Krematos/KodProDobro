@@ -4,11 +4,20 @@ Tato složka obsahuje backendovou část aplikace postavenou na frameworku **Spr
 
 ## 🛠️ Technologie
 
-*   **Java 21**
-*   **Spring Boot 3.x**
+*   **Java 25**
+*   **Spring Boot 3.5.8**
 *   **Maven** (Sestavení a správa závislostí)
 *   **PostgreSQL** (Databáze)
-*   **Spring Security** (Autentizace a autorizace)
+*   **Spring Security** (Autentizace a autorizace, OAuth2 Resource Server)
+*   **Hibernate / CPA** (ORM)
+*   **MapStruct** (Mapování objektů)
+*   **Lombok** (Redukce boilerplate kódu)
+*   **JJWT 0.13.0** (JSON Web Token)
+*   **Bucket4j** (Rate Limiting)
+*   **Caffeine** (Caching)
+*   **Spring Actuator & Micrometer** (Prometheus Monitoring)
+*   **SpringDoc OpenAPI** (Swagger Dokumentace)
+*   **JavaMailSender & Thymeleaf** (E-maily a šablony)
 
 ## 📂 Struktura projektu
 
@@ -20,15 +29,18 @@ Zdrojové kódy se nacházejí v `src/main/java/com/kodprodobro/kodprodobro`. Hl
 *   `repositories/` - Data Access Layer (komunikace s databází přes JPA).
 *   `models/` - Databázové entity (např. `User`, `Project`, `Chat`).
 *   `dto/` - Data Transfer Objects pro přenos dat mezi frontendem a backendem.
+*   `mapper/` - Mapování mezi DTO a entitami (MapStruct).
 *   `security/` - JWT filtry a bezpečnostní konfigurace.
 *   `exception/` - Globální ošetření chyb.
+*   `event/` - Události a listenery.
+*   `component/` - Pomocné komponenty.
 
 ## 🚀 Jak začít
 
 ### Prerekvizity
 
 Ujistěte se, že máte nainstalované:
-1.  **Java 21 JDK**
+1.  **Java 25 JDK**
 2.  **Maven**
 3.  **PostgreSQL**
 
@@ -37,13 +49,13 @@ Ujistěte se, že máte nainstalované:
 Před spuštěním upravte soubor `src/main/resources/application.properties`. Nastavte přístupové údaje k vaší lokální databázi:
 
 ```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/kodprodobro_db
-spring.datasource.username=vase_uzivatelske_jmeno
-spring.datasource.password=vase_heslo
+spring.datasource.url=jdbc:postgresql://localhost:5433/kodprodobro
+spring.datasource.username=postgres
+spring.datasource.password=java-junior-programator27
 spring.jpa.hibernate.ddl-auto=update
 ```
 
-*(Poznámka: Název databáze `kodprodobro_db` si můžete zvolit libovolně, ale musí existovat.)*
+*(Poznámka: Výchozí port databáze je nastaven na **5433**. Název databáze `kodprodobro` si můžete zvolit libovolně, ale musí existovat.)*
 
 ### Spuštění aplikace
 
@@ -54,7 +66,7 @@ mvn spring-boot:run
 ```
 
 Server se spustí na portu **8080**.
-API dokumentace (pokud je nakonfigurován Swagger) bývá dostupná na `http://localhost:8080/swagger-ui.html`.
+API dokumentace je dostupná na `http://localhost:8080/swagger-ui.html`.
 
 ## 🔌 API Endpointy
 
@@ -64,6 +76,8 @@ Hlavní sekce API:
 *   **Projects** (`/api/projects`): Správa projektů.
 *   **Users** (`/api/users`): Správa uživatelských profilů.
 *   **Chat** (`/api/chat`): Funkcionalita chatu.
+
+Monitoring endpointy (Actuator): `/actuator/prometheus`, `/actuator/health`.
 
 ## 🧪 Testování
 

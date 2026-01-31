@@ -5,6 +5,7 @@ import com.kodprodobro.kodprodobro.dto.security.JwtResponse;
 import com.kodprodobro.kodprodobro.dto.security.TokenValidationResponse;
 import com.kodprodobro.kodprodobro.dto.auth.LoginRequest;
 import com.kodprodobro.kodprodobro.dto.auth.RegisterRequest;
+import com.kodprodobro.kodprodobro.dto.user.UserInfoResponse;
 import com.kodprodobro.kodprodobro.models.user.User;
 import com.kodprodobro.kodprodobro.services.JwtService;
 import com.kodprodobro.kodprodobro.services.user.UserDetailsImpl;
@@ -29,6 +30,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +38,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Tag(name = "Authentication", description = "Endpointy pro autentizaci uživatelů a registraci")
@@ -89,25 +92,41 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "Chybějící nebo neplatná data v požadavku", content = @Content)
     })
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<UserInfoResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         log.info("POST /api/auth/login - Pokus o přihlášení uživatele: {}", loginRequest.username());
         // 1. Autentizace uživatele
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.username(),
                         loginRequest.password()));
-        // 2. Nastavení kontextu pro aktuální vlákno
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        // 3. Získání detailů uživatele (UserDetails)
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        // 4. Generování JWT tokenu
+        // 2. Generování JWT tokenu
         String jwt = jwtService.generateAccessToken(userDetails.getUsername());
 
-        // 5. Návrat odpovědi s tokenem
-        return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getUsername(), userDetails.getAuthorities()));
+        Set<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
 
+        // 3. Vytvoření Cookie ✅
+        ResponseCookie cookie = ResponseCookie.from("accessToken", jwt)
+                .httpOnly(true) // Frontend JS ho neuvidí (bezpečnost)
+                .secure(false) // Na localhostu FALSE, v prod TRUE
+                .path("/") // Platí pro celou doménu
+                .maxAge(86400) // 1 den
+                .sameSite("Lax") // Pro localhost Lax, pro prod Strict
+                .build();
+
+        // 4. Odeslání odpovědi
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString()) // Nastavení cookie v hlavičce odpovědi
+                .body(new UserInfoResponse(
+                        userDetails.getId(),
+                        userDetails.getUsername(),
+                        userDetails.getAuthorities().toString(),
+                        roles
+                ));
     }
 
     /**
@@ -138,13 +157,9 @@ public class AuthController {
             }
             // Získání rolí uživatele z tokenu (pokud jsou uloženy v tokenu)
             List<String> rawRoles = jwtService.extractRoles(token);
-
             Set<String> roles = new HashSet<>(rawRoles);
-
-
             // Token je validní
             return ResponseEntity.ok(new TokenValidationResponse(true, username, roles));
-
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

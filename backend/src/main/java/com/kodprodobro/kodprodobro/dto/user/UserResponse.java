@@ -1,11 +1,13 @@
 package com.kodprodobro.kodprodobro.dto.user;
 
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record UserResponse(
+        @Id
         Long id,
 
         @NotBlank(message = "Zadejte uživatelské jméno")

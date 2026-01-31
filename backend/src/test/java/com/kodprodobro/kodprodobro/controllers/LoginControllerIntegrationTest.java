@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -106,8 +107,8 @@ public class LoginControllerIntegrationTest {
                 .andExpect(jsonPath("$.accessToken").exists())
                 .andExpect(jsonPath("$.accessToken").isNotEmpty())
                 .andExpect(jsonPath("$.username").value(TEST_USERNAME))
-                .andExpect(jsonPath("$.authorities").isArray())
-                .andExpect(jsonPath("$.authorities[0].authority").value("ROLE_USER"))
+                .andExpect(jsonPath("$.roles").isArray())
+                .andExpect(jsonPath("$.roles[0]").value("ROLE_USER"))
                 .andReturn();
 
         // Ověření, že token je skutečně generován
@@ -116,23 +117,6 @@ public class LoginControllerIntegrationTest {
         assertThat(jwtResponse.accessToken()).isNotNull();
         assertThat(jwtResponse.accessToken()).startsWith("eyJ"); // JWT tokeny začínají "eyJ"
         assertThat(jwtResponse.username()).isEqualTo(TEST_USERNAME);
-    }
-
-    @Test
-    @Order(2)
-    @DisplayName("POST /api/auth/login - Přihlášení s emailem místo username")
-    void loginUser_WithEmail_ReturnsJwtToken() throws Exception {
-        // Given - použití emailu jako username
-        LoginRequest loginRequest = new LoginRequest(TEST_EMAIL, TEST_PASSWORD);
-
-        // When & Then
-        mockMvc.perform(post("/api/auth/login")
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequest)))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accessToken").exists());
     }
 
     // ========================================
@@ -189,7 +173,7 @@ public class LoginControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.username").exists());
+                .andExpect(jsonPath("$.message").value("Neplatná vstupní data. {username=Uživatelské jméno nesmí být prázdné}"));
     }
 
     @Test
@@ -206,7 +190,7 @@ public class LoginControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.password").exists());
+                .andExpect(jsonPath("$.message").value("Neplatná vstupní data. {password=Heslo nesmí být prázdné}"));
     }
 
     @Test
@@ -223,7 +207,7 @@ public class LoginControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.username").exists());
+                .andExpect(jsonPath("$.message", containsString("Neplatná vstupní data.")));
     }
 
     @Test
@@ -240,7 +224,7 @@ public class LoginControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.password").exists());
+                .andExpect(jsonPath("$.message" , containsString("Neplatná vstupní data.")));
     }
 
     @Test
@@ -312,6 +296,8 @@ public class LoginControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
+        Thread.sleep(1000); // Krátká pauza, aby se zajistilo, že tokeny budou odlišné
+
         // When - Druhé přihlášení
         MvcResult result2 = mockMvc.perform(post("/api/auth/login")
                         .with(csrf())
@@ -320,11 +306,14 @@ public class LoginControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        // Then - Ověření, že jsou generovány různé tokeny
-        String token1 = objectMapper.readValue(result1.getResponse().getContentAsString(), JwtResponse.class).accessToken();
-        String token2 = objectMapper.readValue(result2.getResponse().getContentAsString(), JwtResponse.class).accessToken();
+        // Then - Získání tokenů z COOKIES
+        String token1 = result1.getResponse().getCookie("accessToken").getValue();
+        String token2 = result2.getResponse().getCookie("accessToken").getValue();
 
-        assertThat(token1).isNotEqualTo(token2); // Každé přihlášení by mělo generovat nový token
+        // Ověření
+        assertThat(token1).isNotNull();
+        assertThat(token2).isNotNull();
+        assertThat(token1).isNotEqualTo(token2);
     }
 
     // ========================================

@@ -25,13 +25,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ChatController {
 
-    @Autowired
+
     private ChatRepository chatRepository;
 
-    @Autowired
+
     private ChatMessageRepository chatMessageRepository;
 
-    @Autowired
+
     private UserRepository userRepository;
 
     @GetMapping
