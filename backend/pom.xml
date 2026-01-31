@@ -19,6 +19,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mapstruct.version>1.6.0</mapstruct.version>
         <lombok.version>1.18.40</lombok.version>
+        <sonar.projectKey>Impact</sonar.projectKey>
+        <sonar.host.url>http://localhost:9000</sonar.host.url>
     </properties>
 
     <dependencies>

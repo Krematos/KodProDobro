@@ -6,6 +6,7 @@ import com.kodprodobro.kodprodobro.dto.security.JwtResponse;
 import com.kodprodobro.kodprodobro.models.user.User;
 import com.kodprodobro.kodprodobro.models.enums.Role;
 import com.kodprodobro.kodprodobro.repositories.user.UserRepository;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -39,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DisplayName("Login Integration Tests")
-public class LoginControllerIntegrationTest {
+class LoginControllerIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -104,19 +105,24 @@ public class LoginControllerIntegrationTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.accessToken").exists())
-                .andExpect(jsonPath("$.accessToken").isNotEmpty())
+                .andExpect(cookie().exists("accessToken"))
+                .andExpect(cookie().httpOnly("accessToken", true)) // Ověří, že je to HttpOnly
+                .andExpect(cookie().value("accessToken", org.hamcrest.Matchers.startsWith("eyJ"))) // JWT token začíná na "eyJ"
                 .andExpect(jsonPath("$.username").value(TEST_USERNAME))
                 .andExpect(jsonPath("$.roles").isArray())
                 .andExpect(jsonPath("$.roles[0]").value("ROLE_USER"))
                 .andReturn();
 
-        // Ověření, že token je skutečně generován
+        Cookie cookie = result.getResponse().getCookie("accessToken");
+        assertThat(cookie).isNotNull();
+
+        String token = cookie.getValue();
+        assertThat(token).startsWith("eyJ");
+
         String responseBody = result.getResponse().getContentAsString();
-        JwtResponse jwtResponse = objectMapper.readValue(responseBody, JwtResponse.class);
-        assertThat(jwtResponse.accessToken()).isNotNull();
-        assertThat(jwtResponse.accessToken()).startsWith("eyJ"); // JWT tokeny začínají "eyJ"
-        assertThat(jwtResponse.username()).isEqualTo(TEST_USERNAME);
+        JwtResponse jwtResponseBody = objectMapper.readValue(responseBody, JwtResponse.class);
+        assertThat(jwtResponseBody.username()).isEqualTo(TEST_USERNAME);
+
     }
 
     // ========================================
@@ -190,7 +196,7 @@ public class LoginControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Neplatná vstupní data. {password=Heslo nesmí být prázdné}"));
+                .andExpect(jsonPath("$.message").value("Neplatná vstupní data. {password=Heslo musí být mezi 8 a 100 znaky}"));
     }
 
     @Test
@@ -359,7 +365,7 @@ public class LoginControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accessToken").exists());
+                .andExpect(cookie().exists("accessToken"));
     }
 
     // ========================================

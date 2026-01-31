@@ -35,8 +35,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(AuthController.class)
 @Import({SecurityConfig.class})
@@ -124,8 +123,8 @@ class AuthControllerTest {
                         .with(csrf()) // Přidá CSRF token
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest))) // Posílá DTO
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accessToken").value("dummy-jwt-token"));
+                .andExpect(cookie().value("accessToken", "dummy-jwt-token"))
+                .andExpect(cookie().httpOnly("accessToken", true));
     }
 
     @Test

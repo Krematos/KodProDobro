@@ -183,7 +183,7 @@ class UserServiceTest {
             verify(eventPublisher).publishEvent(eventCaptor.capture());
 
             UserRegisterEvent capturedEvent = eventCaptor.getValue();
-            assertThat(capturedEvent.getUser()).isEqualTo(true);
+            assertThat(capturedEvent.getUser()).isTrue(); // Ověření, že uživatel není null
         }
     }
 
@@ -228,8 +228,7 @@ class UserServiceTest {
             String token = userService.createPasswordResetTokenForUser(TEST_EMAIL);
 
             // Then
-            assertThat(token).isNotNull();
-            assertThat(token).isNotEmpty();
+            assertThat(token).isNotNull().isNotEmpty();
 
             ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
             verify(userRepository).save(userCaptor.capture());

@@ -2,6 +2,8 @@ package com.kodprodobro.kodprodobro.services.user;
 
 
 import com.kodprodobro.kodprodobro.dto.user.UserUpdateResponse;
+import com.kodprodobro.kodprodobro.exception.email.EmailAlreadyExistsException;
+import com.kodprodobro.kodprodobro.exception.user.UserAlreadyExistException;
 import com.kodprodobro.kodprodobro.models.enums.Role;
 import com.kodprodobro.kodprodobro.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -121,11 +123,11 @@ public class UserService {
     private void validateUser(User user) {
         if (Boolean.TRUE.equals(userRepository.existsByUsername(user.getUsername()))) {
             log.warn("Registrace selhala - jméno {} již existuje", user.getUsername());
-            throw new IllegalArgumentException("Uživatelské jméno již existuje");
+            throw new UserAlreadyExistException("Uživatelské jméno již existuje");
         }
         if (Boolean.TRUE.equals(userRepository.existsByEmail(user.getEmail()))) {
             log.warn("Registrace selhala - email {} již existuje", user.getEmail());
-            throw new IllegalArgumentException("Email již existuje");
+            throw new EmailAlreadyExistsException("Email již existuje");
         }
     }
 
